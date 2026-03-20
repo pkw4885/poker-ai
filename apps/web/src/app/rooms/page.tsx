@@ -46,13 +46,13 @@ export default function RoomsPage() {
     setError("");
     setLoading(true);
     try {
-      const room = await createRoom(token, {
+      const result = await createRoom(token, {
         name: roomName.trim(),
         max_players: maxPlayers,
         ai_count: aiCount,
         ai_difficulty: aiDifficulty,
       });
-      router.push(`/rooms/${room.id}`);
+      router.push(`/rooms/${result.room_id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create room");
     } finally {

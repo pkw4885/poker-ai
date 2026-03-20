@@ -26,7 +26,8 @@ function authHeaders(token: string) {
 export async function listRooms(): Promise<Room[]> {
   const res = await fetch(`${API_BASE}/api/rooms`);
   if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  const data = await res.json();
+  return data.rooms || data;
 }
 
 export async function createRoom(
@@ -37,7 +38,7 @@ export async function createRoom(
     ai_count: number;
     ai_difficulty: string;
   }
-): Promise<RoomDetail> {
+): Promise<{ room_id: number }> {
   const res = await fetch(`${API_BASE}/api/rooms`, {
     method: "POST",
     headers: authHeaders(token),
