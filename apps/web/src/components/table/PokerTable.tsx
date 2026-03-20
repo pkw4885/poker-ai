@@ -1,9 +1,8 @@
 "use client";
 
 import type { GameStateView, ValidAction } from "@/types/game";
-import PlayerSeat from "./PlayerSeat";
+import PlayerSeat, { formatChips } from "./PlayerSeat";
 import CommunityCards from "./CommunityCards";
-import PotDisplay from "./PotDisplay";
 import ActionPanel from "./ActionPanel";
 import TurnTimer from "./TurnTimer";
 import { useI18n } from "@/lib/i18n";
@@ -14,6 +13,9 @@ interface PokerTableProps {
   isMyTurn: boolean;
   onAction: (type: string, amount?: number) => void;
   turnDuration?: number;
+  turnKey?: number; // unique key to force timer reset
+  displayMode?: "won" | "bb";
+  onToggleDisplay?: () => void;
 }
 
 const SEAT_POSITIONS: Record<number, { top: string; left: string }[]> = {
@@ -74,6 +76,9 @@ export default function PokerTable({
   isMyTurn,
   onAction,
   turnDuration = 30,
+  turnKey = 0,
+  displayMode = "won",
+  onToggleDisplay,
 }: PokerTableProps) {
   const numPlayers = gameState.players.length;
   const positions = SEAT_POSITIONS[numPlayers] || SEAT_POSITIONS[8];
@@ -86,19 +91,50 @@ export default function PokerTable({
   };
 
   const phaseKey = `phase.${gameState.phase}` as const;
+  const bb = gameState.big_blind || 20;
+  const sb = gameState.small_blind || 10;
+  const totalPot = gameState.total_pot;
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-4xl mx-auto">
+    <div className="flex flex-col items-center gap-3 w-full max-w-4xl mx-auto">
+      {/* Blind level + display toggle */}
+      <div className="flex items-center justify-between w-full max-w-lg px-2">
+        <div className="text-[10px] text-[#666] font-mono tracking-wider">
+          {t("table.hand")} #{gameState.hand_number} &middot; {t(phaseKey)}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-[#fbbf24] font-mono">
+            SB/BB {formatChips(sb, displayMode, bb)}/{formatChips(bb, displayMode, bb)}
+          </span>
+          {onToggleDisplay && (
+            <button
+              onClick={onToggleDisplay}
+              className="text-[9px] px-1.5 py-0.5 border border-[#333] text-[#666] hover:text-white hover:border-[#555] transition-colors uppercase tracking-wider"
+            >
+              {displayMode === "won" ? "BB" : "₩"}
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Table */}
-      <div className="relative w-full aspect-[16/10] max-h-[420px] md:max-h-[500px]">
+      <div className="relative w-full aspect-[16/10] max-h-[380px] md:max-h-[480px]">
         {/* Table surface */}
         <div className="absolute inset-[5%] rounded-[50%] bg-gradient-to-b from-[#0d1f0d] to-[#0a1a0a] border-2 border-[#1a2e1a] shadow-[0_0_60px_rgba(0,0,0,0.5)]" />
         <div className="absolute inset-[10%] rounded-[50%] border border-[#1a2e1a]/50" />
 
         {/* Community cards + pot */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5">
           <CommunityCards board={gameState.board} />
-          <PotDisplay pots={gameState.pots} totalPot={gameState.total_pot} />
+          {/* Pot display */}
+          {totalPot > 0 && (
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] text-[#888] uppercase tracking-wider">POT</span>
+              <span className="text-sm md:text-base font-bold text-white font-mono">
+                {formatChips(totalPot, displayMode, bb)}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Player seats */}
@@ -107,16 +143,21 @@ export default function PokerTable({
             key={player.id}
             player={player}
             isDealer={i === gameState.dealer_pos}
-            isCurrentTurn={i === gameState.current_player_idx}
+            isSB={i === gameState.small_blind_pos}
+            isBB={i === gameState.big_blind_pos}
+            isCurrentTurn={i === gameState.current_player_idx && gameState.phase !== "hand_over"}
             isHuman={i === 0}
             position={positions[i] || { top: "50%", left: "50%" }}
             seatIndex={i}
+            displayMode={displayMode}
+            bigBlind={bb}
           />
         ))}
       </div>
 
-      {/* Turn timer */}
+      {/* Turn timer - key forces remount to reset */}
       <TurnTimer
+        key={turnKey}
         duration={turnDuration}
         isActive={isMyTurn}
         onTimeout={handleTimeout}
@@ -127,12 +168,9 @@ export default function PokerTable({
         validActions={validActions}
         isMyTurn={isMyTurn}
         onAction={onAction}
+        displayMode={displayMode}
+        bigBlind={bb}
       />
-
-      {/* Phase indicator */}
-      <div className="text-[10px] text-[#444] tracking-[0.2em] uppercase">
-        {t("table.hand")} #{gameState.hand_number} &middot; {t(phaseKey)}
-      </div>
     </div>
   );
 }

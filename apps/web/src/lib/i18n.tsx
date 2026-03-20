@@ -247,6 +247,9 @@ const translations = {
 
   // Pot display
   "pot.label": { ko: "팟", en: "Pot" },
+
+  // Blind display
+  "blind.level": { ko: "블라인드", en: "Blinds" },
 } as const;
 
 type TranslationKey = keyof typeof translations;

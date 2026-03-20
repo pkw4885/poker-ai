@@ -90,10 +90,11 @@ class ActiveGame:
         self,
         game_id: str,
         num_opponents: int,
-        starting_stack: int,
-        small_blind: int,
-        big_blind: int,
+        starting_stack: int = 10000,
+        small_blind: int = 5,
+        big_blind: int = 10,
         difficulty: str = "medium",
+        is_tournament: bool = True,
     ):
         self.game_id = game_id
         self.created_at = time.time()
@@ -101,7 +102,10 @@ class ActiveGame:
         names = ["You"] + [f"AI_{i}" for i in range(1, num_opponents + 1)]
         from poker_engine.blinds import BlindManager, BlindLevel
 
-        blind_mgr = BlindManager(schedule=[BlindLevel(small_blind, big_blind)])
+        if is_tournament:
+            blind_mgr = BlindManager(is_tournament=True)
+        else:
+            blind_mgr = BlindManager(schedule=[BlindLevel(small_blind, big_blind)])
         self.game = Game(names, starting_stacks=starting_stack, blind_manager=blind_mgr)
         self.ai_players = {
             i: AIPlayer(difficulty) for i in range(1, num_opponents + 1)
@@ -127,6 +131,7 @@ class ActiveGame:
 
     def _run_ai_turns(self) -> dict:
         """Run AI player turns until it's human's turn or hand is over."""
+        ai_actions = []
         while True:
             if self.game.phase == GamePhase.HAND_OVER:
                 self.hand_started = False
@@ -146,12 +151,17 @@ class ActiveGame:
                     player_id=current_idx,
                 )
                 self.game.act(ai_action)
+                ai_actions.append({
+                    "player_id": current_idx,
+                    "type": ai_action.type.value,
+                    "amount": ai_action.amount,
+                })
             else:
                 break
 
-        return self._get_response()
+        return self._get_response(ai_actions)
 
-    def _get_response(self) -> dict:
+    def _get_response(self, ai_actions: list | None = None) -> dict:
         """Build the response dict for the frontend."""
         state = self.game.state
         player_view = state.get_player_view(0)
@@ -160,6 +170,7 @@ class ActiveGame:
             "game_state": player_view,
             "phase": state.phase.value,
             "hand_over": state.is_hand_over,
+            "ai_actions": ai_actions or [],
         }
 
         if not state.is_hand_over and state.current_player_idx == 0:
@@ -188,14 +199,17 @@ _games: dict[str, ActiveGame] = {}
 
 def create_game(
     num_opponents: int = 3,
-    starting_stack: int = 1000,
+    starting_stack: int = 10000,
     small_blind: int = 5,
     big_blind: int = 10,
     difficulty: str = "medium",
+    is_tournament: bool = True,
 ) -> tuple[str, dict]:
     """Create a new game and start the first hand."""
     game_id = str(uuid.uuid4())[:8]
-    active = ActiveGame(game_id, num_opponents, starting_stack, small_blind, big_blind, difficulty)
+    active = ActiveGame(
+        game_id, num_opponents, starting_stack, small_blind, big_blind, difficulty, is_tournament
+    )
     _games[game_id] = active
     result = active.start_new_hand()
     return game_id, result

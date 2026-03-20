@@ -96,6 +96,10 @@ class GameState:
             "pots": self.pot_manager.get_pot_display(),
             "total_pot": self.total_pot,
             "dealer_pos": self.dealer_pos,
+            "small_blind_pos": self.small_blind_pos,
+            "big_blind_pos": self.big_blind_pos,
+            "small_blind": self.small_blind,
+            "big_blind": self.big_blind,
             "current_player_idx": self.current_player_idx,
             "hand_number": self.hand_number,
         }

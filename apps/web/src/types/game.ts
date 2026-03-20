@@ -45,8 +45,18 @@ export interface GameStateView {
   pots: PotInfo[];
   total_pot: number;
   dealer_pos: number;
+  small_blind_pos: number;
+  big_blind_pos: number;
+  small_blind: number;
+  big_blind: number;
   current_player_idx: number;
   hand_number: number;
+}
+
+export interface AIAction {
+  player_id: number;
+  type: ActionType;
+  amount: number;
 }
 
 export interface ValidAction {
