@@ -1,8 +1,43 @@
 "use client";
 
-import type { PlayerView } from "@/types/game";
+import type { PlayerView, LastAction } from "@/types/game";
 import Card from "./Card";
 import { useI18n } from "@/lib/i18n";
+
+const ACTION_STYLES: Record<string, { label: string; color: string; bg: string }> = {
+  fold: { label: "FOLD", color: "#ff4444", bg: "rgba(255,68,68,0.15)" },
+  check: { label: "CHECK", color: "#00dc82", bg: "rgba(0,220,130,0.15)" },
+  call: { label: "CALL", color: "#3b82f6", bg: "rgba(59,130,246,0.15)" },
+  raise: { label: "RAISE", color: "#fbbf24", bg: "rgba(251,191,36,0.15)" },
+  all_in: { label: "ALL IN", color: "#ff6b00", bg: "rgba(255,107,0,0.2)" },
+};
+
+function ActionBadge({ action }: { action: LastAction }) {
+  const style = ACTION_STYLES[action.type] || ACTION_STYLES.check;
+  const label = action.amount && action.amount > 0 && action.type !== "fold" && action.type !== "check"
+    ? `${style.label} ${action.amount}`
+    : style.label;
+
+  return (
+    <div
+      className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap z-10 pointer-events-none"
+      style={{
+        animation: "actionPop 0.3s ease-out, actionFade 2.5s ease-in forwards",
+      }}
+    >
+      <span
+        className="px-1.5 py-0.5 text-[8px] md:text-[9px] font-bold tracking-wider uppercase"
+        style={{
+          color: style.color,
+          backgroundColor: style.bg,
+          border: `1px solid ${style.color}40`,
+        }}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
 
 interface PlayerSeatProps {
   player: PlayerView;
@@ -34,6 +69,16 @@ export default function PlayerSeat({
       }`}
       style={{ top: position.top, left: position.left }}
     >
+      {/* Action badge */}
+      {player.last_action && !isOut && (
+        <div className="relative w-full">
+          <ActionBadge
+            key={`${player.id}-${player.last_action.type}-${player.last_action.amount ?? 0}`}
+            action={player.last_action}
+          />
+        </div>
+      )}
+
       {/* Cards */}
       <div className="flex gap-0.5">
         {player.hole_cards.length > 0 ? (

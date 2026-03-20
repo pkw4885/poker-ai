@@ -269,6 +269,8 @@ async def _handle_start_game(room_id: int, user_id: int, ws: WebSocket) -> None:
         human_players=human_players,
         ai_count=room["ai_count"],
         ai_difficulty=room["ai_difficulty"],
+        ai_muck=bool(room["ai_muck"]),
+        ai_fold_reveal=bool(room["ai_fold_reveal"]),
     )
 
     room_game.start_hand()

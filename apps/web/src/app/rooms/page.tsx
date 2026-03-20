@@ -21,6 +21,8 @@ export default function RoomsPage() {
   const [maxPlayers, setMaxPlayers] = useState(6);
   const [aiCount, setAiCount] = useState(2);
   const [aiDifficulty, setAiDifficulty] = useState<Difficulty>("medium");
+  const [aiMuck, setAiMuck] = useState(false);
+  const [aiFoldReveal, setAiFoldReveal] = useState(true);
 
   const fetchRooms = useCallback(async () => {
     try {
@@ -51,6 +53,8 @@ export default function RoomsPage() {
         max_players: maxPlayers,
         ai_count: aiCount,
         ai_difficulty: aiDifficulty,
+        ai_muck: aiMuck,
+        ai_fold_reveal: aiFoldReveal,
       });
       router.push(`/rooms/${result.room_id}`);
     } catch (e) {
@@ -186,6 +190,62 @@ export default function RoomsPage() {
                     {d}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-2 block">
+                AI Muck Mode
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setAiMuck(false)}
+                  className={`flex-1 py-2 text-xs font-medium tracking-wider uppercase transition-all border ${
+                    !aiMuck
+                      ? "bg-white text-black border-white"
+                      : "bg-transparent text-[#666] border-[#333] hover:border-[#555]"
+                  }`}
+                >
+                  Never Muck (공개)
+                </button>
+                <button
+                  onClick={() => setAiMuck(true)}
+                  className={`flex-1 py-2 text-xs font-medium tracking-wider uppercase transition-all border ${
+                    aiMuck
+                      ? "bg-white text-black border-white"
+                      : "bg-transparent text-[#666] border-[#333] hover:border-[#555]"
+                  }`}
+                >
+                  Can Muck (먹 허용)
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-2 block">
+                AI Fold Reveal
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setAiFoldReveal(true)}
+                  className={`flex-1 py-2 text-xs font-medium tracking-wider uppercase transition-all border ${
+                    aiFoldReveal
+                      ? "bg-white text-black border-white"
+                      : "bg-transparent text-[#666] border-[#333] hover:border-[#555]"
+                  }`}
+                >
+                  Show Cards (공개)
+                </button>
+                <button
+                  onClick={() => setAiFoldReveal(false)}
+                  className={`flex-1 py-2 text-xs font-medium tracking-wider uppercase transition-all border ${
+                    !aiFoldReveal
+                      ? "bg-white text-black border-white"
+                      : "bg-transparent text-[#666] border-[#333] hover:border-[#555]"
+                  }`}
+                >
+                  Hide Cards (비공개)
+                </button>
               </div>
             </div>
 

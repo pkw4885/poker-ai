@@ -7,6 +7,8 @@ export interface Room {
   max_players: number;
   ai_count: number;
   ai_difficulty: string;
+  ai_muck: boolean;
+  ai_fold_reveal: boolean;
   status: string;
   player_count: number;
   created_at: string;
@@ -37,6 +39,8 @@ export async function createRoom(
     max_players: number;
     ai_count: number;
     ai_difficulty: string;
+    ai_muck: boolean;
+    ai_fold_reveal: boolean;
   }
 ): Promise<{ room_id: number }> {
   const res = await fetch(`${API_BASE}/api/rooms`, {

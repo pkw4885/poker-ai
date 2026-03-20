@@ -199,6 +199,18 @@ export default function RoomPage() {
                     <span className="text-[#555]">AI Difficulty</span>
                     <span className="text-white uppercase">{room.ai_difficulty}</span>
                   </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[#555]">AI Muck Mode</span>
+                    <span className="text-white">
+                      {room.ai_muck ? "먹 허용" : "공개"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[#555]">AI Fold Reveal</span>
+                    <span className="text-white">
+                      {room.ai_fold_reveal ? "공개" : "비공개"}
+                    </span>
+                  </div>
                 </>
               )}
             </div>

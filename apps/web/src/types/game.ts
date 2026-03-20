@@ -15,6 +15,11 @@ export type GamePhase =
   | "showdown"
   | "hand_over";
 
+export interface LastAction {
+  type: ActionType;
+  amount?: number;
+}
+
 export interface PlayerView {
   id: number;
   name: string;
@@ -23,6 +28,7 @@ export interface PlayerView {
   current_bet: number;
   total_bet: number;
   hole_cards: number[];
+  last_action?: LastAction | null;
 }
 
 export interface PotInfo {

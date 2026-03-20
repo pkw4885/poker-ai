@@ -58,6 +58,16 @@ class GameState:
     def is_hand_over(self) -> bool:
         return self.phase == GamePhase.HAND_OVER
 
+    def _get_last_action_for_player(self, pid: int) -> dict | None:
+        """Find the most recent action by a player in the current street."""
+        for action in reversed(self.action_history):
+            if action.player_id == pid:
+                result: dict = {"type": action.type.value}
+                if action.amount > 0:
+                    result["amount"] = action.amount
+                return result
+        return None
+
     def get_player_view(self, player_id: int) -> dict:
         """Get a filtered view for a specific player (hides opponents' cards)."""
         players_view = []
@@ -69,6 +79,7 @@ class GameState:
                 "status": p.status.value,
                 "current_bet": p.current_bet,
                 "total_bet": p.total_bet,
+                "last_action": self._get_last_action_for_player(p.id),
             }
             if p.id == player_id:
                 pv["hole_cards"] = p.hole_cards
@@ -88,6 +99,41 @@ class GameState:
             "current_player_idx": self.current_player_idx,
             "hand_number": self.hand_number,
         }
+
+    def get_player_view_with_settings(
+        self,
+        player_id: int,
+        ai_muck: bool = False,
+        ai_fold_reveal: bool = True,
+        ai_player_ids: list[int] | None = None,
+    ) -> dict:
+        """Get a filtered view for a specific player with room-specific AI reveal logic.
+
+        Args:
+            player_id: The player requesting the view.
+            ai_muck: If False, reveal ALL AI cards at hand over.
+            ai_fold_reveal: If True, reveal folded AI players' cards.
+            ai_player_ids: List of player IDs that are AI players.
+        """
+        view = self.get_player_view(player_id)
+        if ai_player_ids is None:
+            ai_player_ids = []
+
+        ai_set = set(ai_player_ids)
+
+        # If ai_fold_reveal is True, show folded AI players' hole cards (during play)
+        if ai_fold_reveal and not self.is_hand_over:
+            for p in self.players:
+                if p.id in ai_set and p.is_folded and p.hole_cards:
+                    view["players"][p.id]["hole_cards"] = p.hole_cards
+
+        # If ai_muck is False (never muck), reveal ALL AI cards at hand over
+        if self.is_hand_over and not ai_muck:
+            for p in self.players:
+                if p.id in ai_set and p.hole_cards:
+                    view["players"][p.id]["hole_cards"] = p.hole_cards
+
+        return view
 
     def copy(self) -> GameState:
         """Create a deep copy of the game state."""

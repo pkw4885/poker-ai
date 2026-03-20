@@ -29,12 +29,16 @@ class RoomGame:
         human_players: list[dict[str, Any]],
         ai_count: int = 0,
         ai_difficulty: str = "medium",
+        ai_muck: bool = False,
+        ai_fold_reveal: bool = True,
         starting_stack: int = 1000,
         small_blind: int = 5,
         big_blind: int = 10,
     ):
         self.room_id = room_id
         self.game_id = str(uuid.uuid4())[:8]
+        self.ai_muck = ai_muck
+        self.ai_fold_reveal = ai_fold_reveal
 
         # Build player list: humans first, then AI
         self.human_players = human_players  # [{"id": user_id, "username": name, "seat": idx}, ...]
@@ -137,6 +141,7 @@ class RoomGame:
         }
 
         for idx, p in enumerate(state.players):
+            last_action = state._get_last_action_for_player(idx)
             pdata: dict[str, Any] = {
                 "seat": idx,
                 "name": p.name,
@@ -145,6 +150,7 @@ class RoomGame:
                 "is_folded": p.is_folded,
                 "is_all_in": p.is_all_in,
                 "is_ai": idx in self.ai_seats,
+                "last_action": last_action,
             }
             result["players"].append(pdata)
 
@@ -161,6 +167,11 @@ class RoomGame:
             for p in state.players:
                 if p.is_in_hand:
                     result["players"][p.id]["hole_cards"] = p.hole_cards
+            # If ai_muck is False (never muck), reveal ALL AI cards at hand over
+            if not self.ai_muck:
+                for idx in self.ai_seats:
+                    if idx < len(state.players):
+                        result["players"][idx]["hole_cards"] = state.players[idx].hole_cards
 
         if not state.is_hand_over:
             result["current_player_seat"] = state.current_player_idx
@@ -180,6 +191,14 @@ class RoomGame:
             player = state.players[seat]
             if hasattr(player, "hole_cards") and player.hole_cards:
                 full["players"][seat]["hole_cards"] = player.hole_cards
+
+        # If ai_fold_reveal is True, show folded AI players' cards
+        if self.ai_fold_reveal and not state.is_hand_over:
+            for idx in self.ai_seats:
+                if idx < len(state.players):
+                    ai_player = state.players[idx]
+                    if ai_player.is_folded and hasattr(ai_player, "hole_cards") and ai_player.hole_cards:
+                        full["players"][idx]["hole_cards"] = ai_player.hole_cards
 
         # Add valid actions if it's this player's turn
         if (
@@ -220,6 +239,8 @@ def create_room_game(
     human_players: list[dict[str, Any]],
     ai_count: int = 0,
     ai_difficulty: str = "medium",
+    ai_muck: bool = False,
+    ai_fold_reveal: bool = True,
 ) -> RoomGame:
     """Create and store a new room game."""
     rg = RoomGame(
@@ -227,6 +248,8 @@ def create_room_game(
         human_players=human_players,
         ai_count=ai_count,
         ai_difficulty=ai_difficulty,
+        ai_muck=ai_muck,
+        ai_fold_reveal=ai_fold_reveal,
     )
     _room_games[room_id] = rg
     return rg

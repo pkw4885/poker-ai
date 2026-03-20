@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS rooms (
     max_players INTEGER NOT NULL DEFAULT 6,
     ai_count INTEGER NOT NULL DEFAULT 0,
     ai_difficulty TEXT NOT NULL DEFAULT 'medium',
+    ai_muck BOOLEAN NOT NULL DEFAULT 0,
+    ai_fold_reveal BOOLEAN NOT NULL DEFAULT 1,
     status TEXT NOT NULL DEFAULT 'waiting',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (host_user_id) REFERENCES users(id)

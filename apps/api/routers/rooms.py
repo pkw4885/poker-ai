@@ -18,6 +18,8 @@ class CreateRoomRequest(BaseModel):
     max_players: int = 6
     ai_count: int = 0
     ai_difficulty: str = "medium"
+    ai_muck: bool = False
+    ai_fold_reveal: bool = True
 
 
 @router.post("")
@@ -40,9 +42,9 @@ async def create_room(
     conn = get_db()
     try:
         cur = conn.execute(
-            "INSERT INTO rooms (name, host_user_id, max_players, ai_count, ai_difficulty, status) "
-            "VALUES (?, ?, ?, ?, ?, 'waiting')",
-            (req.name, user["id"], req.max_players, req.ai_count, req.ai_difficulty),
+            "INSERT INTO rooms (name, host_user_id, max_players, ai_count, ai_difficulty, ai_muck, ai_fold_reveal, status) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 'waiting')",
+            (req.name, user["id"], req.max_players, req.ai_count, req.ai_difficulty, req.ai_muck, req.ai_fold_reveal),
         )
         room_id = cur.lastrowid
         # Host auto-joins at seat 0
@@ -79,6 +81,8 @@ async def list_rooms() -> dict[str, Any]:
             "max_players": r["max_players"],
             "ai_count": r["ai_count"],
             "ai_difficulty": r["ai_difficulty"],
+            "ai_muck": bool(r["ai_muck"]),
+            "ai_fold_reveal": bool(r["ai_fold_reveal"]),
             "player_count": r["player_count"],
             "status": r["status"],
             "created_at": r["created_at"],
@@ -119,6 +123,8 @@ async def get_room(room_id: int) -> dict[str, Any]:
             "max_players": room["max_players"],
             "ai_count": room["ai_count"],
             "ai_difficulty": room["ai_difficulty"],
+            "ai_muck": bool(room["ai_muck"]),
+            "ai_fold_reveal": bool(room["ai_fold_reveal"]),
             "status": room["status"],
             "created_at": room["created_at"],
         },

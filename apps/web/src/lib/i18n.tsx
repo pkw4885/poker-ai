@@ -35,14 +35,90 @@ const translations = {
   "home.footer": { ko: "CFR + Deep RL 기반", en: "Built with CFR + Deep RL" },
 
   // Guide page
-  "guide.title": { ko: "프리플랍 가이드", en: "Preflop Guide" },
-  "guide.subtitle": { ko: "홀 카드와 포지션을 선택하세요", en: "Select your hole cards and position" },
+  "guide.title": { ko: "포커 시튜에이션 분석기", en: "Poker Situation Analyzer" },
+  "guide.subtitle": { ko: "상황을 입력하면 최적의 액션을 추천합니다", en: "Input your situation for optimal action recommendations" },
   "guide.position": { ko: "포지션", en: "Position" },
-  "guide.yourCards": { ko: "핸드 카드", en: "Your Cards" },
+  "guide.yourCards": { ko: "핸드 카드", en: "Your Hand" },
   "guide.selectPrompt": {
-    ko: "추천을 보려면 카드 2장을 선택하세요",
-    en: "Select 2 cards to see recommendation",
+    ko: "추천을 보려면 카드 2장을 선택하세요 (0장 = 범위 조언)",
+    en: "Select 2 cards for recommendation (0 = range advice)",
   },
+  "guide.clearCards": { ko: "초기화", en: "Clear" },
+
+  // Game Context
+  "guide.gameContext": { ko: "게임 컨텍스트", en: "Game Context" },
+  "guide.effectiveStack": { ko: "유효 스택", en: "Effective Stack" },
+  "guide.numPlayers": { ko: "플레이어 수", en: "Number of Players" },
+  "guide.bbSize": { ko: "빅블라인드 크기", en: "Big Blind Size" },
+
+  // Pre-Action
+  "guide.preAction": { ko: "프리액션", en: "Pre-Action" },
+  "guide.unopened": { ko: "폴드됨 (오픈 기회)", en: "Unopened" },
+  "guide.limped": { ko: "림프", en: "Limped" },
+  "guide.singleRaise": { ko: "싱글 레이즈", en: "Single Raise" },
+  "guide.threeBet": { ko: "3-Bet", en: "3-Bet" },
+  "guide.fourBetPlus": { ko: "4-Bet+", en: "4-Bet+" },
+  "guide.raiseSize": { ko: "레이즈 사이즈", en: "Raise Size" },
+  "guide.numCallers": { ko: "콜러 수", en: "Number of Callers" },
+
+  // Opponent Profile
+  "guide.opponentProfile": { ko: "상대 성향", en: "Opponent Profile" },
+  "guide.style": { ko: "스타일", en: "Style" },
+  "guide.tight_passive": { ko: "타이트-패시브 (Rock)", en: "Tight-Passive (Rock)" },
+  "guide.tight_aggressive": { ko: "타이트-어그레시브 (TAG)", en: "Tight-Aggressive (TAG)" },
+  "guide.loose_passive": { ko: "루즈-패시브 (콜링스테이션)", en: "Loose-Passive (Calling Station)" },
+  "guide.loose_aggressive": { ko: "루즈-어그레시브 (LAG)", en: "Loose-Aggressive (LAG)" },
+  "guide.skillLevel": { ko: "스킬 레벨", en: "Skill Level" },
+  "guide.skillLow": { ko: "낮음", en: "Low" },
+  "guide.skillMedium": { ko: "보통", en: "Medium" },
+  "guide.skillHigh": { ko: "높음", en: "High" },
+
+  // Street & Board
+  "guide.streetBoard": { ko: "스트릿 & 보드", en: "Street & Board" },
+  "guide.street": { ko: "스트릿", en: "Street" },
+  "guide.preflop": { ko: "프리플랍", en: "Preflop" },
+  "guide.flop": { ko: "플랍", en: "Flop" },
+  "guide.turn": { ko: "턴", en: "Turn" },
+  "guide.river": { ko: "리버", en: "River" },
+  "guide.boardCards": { ko: "커뮤니티 카드", en: "Board Cards" },
+  "guide.boardTexture": { ko: "보드 텍스쳐", en: "Board Texture" },
+  "guide.texture.dry": { ko: "드라이", en: "Dry" },
+  "guide.texture.wet": { ko: "웻", en: "Wet" },
+  "guide.texture.monotone": { ko: "모노톤", en: "Monotone" },
+  "guide.texture.paired": { ko: "페어드", en: "Paired" },
+  "guide.texture.connected": { ko: "커넥티드", en: "Connected" },
+  "guide.texture.highCard": { ko: "하이카드", en: "High" },
+  "guide.texture.lowCard": { ko: "로우카드", en: "Low" },
+  "guide.texture.rainbow": { ko: "레인보우", en: "Rainbow" },
+  "guide.texture.twoTone": { ko: "투톤", en: "Two-tone" },
+
+  // Recommendation output
+  "guide.situationSummary": { ko: "시튜에이션 요약", en: "Situation Summary" },
+  "guide.recommendedAction": { ko: "추천 액션", en: "Recommended Action" },
+  "guide.actionBreakdown": { ko: "액션 비율", en: "Action Breakdown" },
+  "guide.reasoning": { ko: "판단 근거", en: "Reasoning" },
+  "guide.sizingGuide": { ko: "사이징 가이드", en: "Sizing Guide" },
+  "guide.rangeAdvice": { ko: "범위 조언", en: "Range Advice" },
+  "guide.analyze": { ko: "분석", en: "Analyze" },
+
+  // Action labels for breakdown
+  "guide.action.raise": { ko: "레이즈", en: "Raise" },
+  "guide.action.call": { ko: "콜", en: "Call" },
+  "guide.action.fold": { ko: "폴드", en: "Fold" },
+  "guide.action.threeBet": { ko: "3-Bet", en: "3-Bet" },
+  "guide.action.fourBet": { ko: "4-Bet", en: "4-Bet" },
+  "guide.action.check": { ko: "체크", en: "Check" },
+  "guide.action.bet": { ko: "벳", en: "Bet" },
+  "guide.action.checkRaise": { ko: "체크레이즈", en: "Check-Raise" },
+  "guide.action.allIn": { ko: "올인", en: "All-In" },
+  "guide.action.pushFold": { ko: "푸시/폴드", en: "Push/Fold" },
+
+  // Stack depth labels
+  "guide.pushFoldZone": { ko: "푸시/폴드 존", en: "Push/Fold Zone" },
+  "guide.shortStack": { ko: "숏 스택", en: "Short Stack" },
+  "guide.midStack": { ko: "미드 스택", en: "Mid Stack" },
+  "guide.deepStack": { ko: "딥 스택", en: "Deep Stack" },
+  "guide.veryDeep": { ko: "매우 딥", en: "Very Deep" },
 
   // Position descriptions
   "pos.UTG": { ko: "언더더건", en: "Under the Gun" },
