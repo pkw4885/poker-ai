@@ -27,7 +27,6 @@ export default function PlayPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Config
   const [numOpponents, setNumOpponents] = useState(3);
   const [startingStack] = useState(1000);
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
@@ -87,63 +86,82 @@ export default function PlayPage() {
   }, [gameId, applyResponse]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      <header className="p-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5]">
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-[#1a1a1a]">
         <Link
           href="/"
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-xs text-[#666] hover:text-white transition-colors uppercase tracking-wider"
         >
           &larr; Back
         </Link>
-        {gameId && (
-          <span className="text-xs text-gray-500">Game: {gameId}</span>
-        )}
-      </header>
+        <span className="text-xs font-semibold tracking-widest uppercase text-[#444]">
+          {gameId ? `Game ${gameId.slice(0, 8)}` : "Play"}
+        </span>
+        <div className="w-12" />
+      </nav>
 
       <main className="px-4 pb-8">
         {!gameState ? (
           /* Lobby */
-          <div className="flex flex-col items-center pt-12 gap-8">
-            <h1 className="text-3xl font-bold">Play vs AI</h1>
+          <div className="flex flex-col items-center pt-16 md:pt-24 gap-10 max-w-sm mx-auto">
+            <div className="text-center">
+              <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                Play vs AI
+              </h1>
+              <p className="text-xs text-[#555] mt-2">
+                Configure your game settings
+              </p>
+            </div>
 
-            <div className="flex flex-col gap-4 w-full max-w-sm">
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-gray-400">
-                  Opponents: {numOpponents}
-                </span>
+            <div className="flex flex-col gap-6 w-full">
+              {/* Opponents */}
+              <div>
+                <div className="flex justify-between mb-3">
+                  <label className="text-[10px] tracking-[0.2em] uppercase text-[#555]">
+                    Opponents
+                  </label>
+                  <span className="text-xs text-white font-mono">
+                    {numOpponents}
+                  </span>
+                </div>
                 <input
                   type="range"
                   min={1}
                   max={7}
                   value={numOpponents}
                   onChange={(e) => setNumOpponents(parseInt(e.target.value))}
-                  className="accent-blue-500"
+                  className="w-full"
                 />
-              </label>
+              </div>
 
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-gray-400">Difficulty</span>
+              {/* Difficulty */}
+              <div>
+                <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-3 block">
+                  Difficulty
+                </label>
                 <div className="flex gap-2">
                   {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
                     <button
                       key={d}
                       onClick={() => setDifficulty(d)}
-                      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`flex-1 py-2.5 text-xs font-medium tracking-wider uppercase transition-all border ${
                         difficulty === d
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+                          ? "bg-white text-black border-white"
+                          : "bg-transparent text-[#666] border-[#333] hover:border-[#555]"
                       }`}
                     >
-                      {d.charAt(0).toUpperCase() + d.slice(1)}
+                      {d}
                     </button>
                   ))}
                 </div>
-              </label>
+              </div>
 
+              {/* Start */}
               <button
                 onClick={handleCreateGame}
                 disabled={loading}
-                className="mt-4 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-600 text-white font-bold rounded-xl text-lg transition-colors"
+                className="mt-4 py-3 bg-white text-black font-semibold text-sm tracking-wider uppercase hover:bg-[#e5e5e5] disabled:bg-[#333] disabled:text-[#666] transition-all"
               >
                 {loading ? "Creating..." : "Start Game"}
               </button>
@@ -151,7 +169,7 @@ export default function PlayPage() {
           </div>
         ) : (
           /* Game table */
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 pt-4">
             <PokerTable
               gameState={gameState}
               validActions={validActions}
@@ -161,19 +179,22 @@ export default function PlayPage() {
 
             {/* Hand results */}
             {handOver && handResults.length > 0 && (
-              <div className="flex flex-col items-center gap-3 p-4 bg-gray-800/80 rounded-xl border border-gray-700 max-w-md w-full">
-                <h3 className="text-lg font-bold text-yellow-400">
+              <div className="flex flex-col items-center gap-3 p-5 bg-[#111] border border-[#222] max-w-md w-full">
+                <span className="text-[10px] tracking-[0.2em] uppercase text-[#555]">
                   Hand Result
-                </h3>
+                </span>
                 {handResults.map((r, i) => (
                   <div key={i} className="text-sm text-center">
-                    <span className="text-gray-300">
+                    <span className="text-[#999]">
                       {r.hand_class === "fold"
                         ? "Won by fold"
                         : `${r.hand_class}`}
                     </span>
-                    <span className="text-emerald-400 ml-2">
-                      +{r.pot_amount} to{" "}
+                    <span className="text-[#00dc82] ml-2 font-mono">
+                      +{r.pot_amount}
+                    </span>
+                    <span className="text-[#666] ml-1">
+                      to{" "}
                       {r.winners
                         .map((w) =>
                           w === 0
@@ -186,7 +207,7 @@ export default function PlayPage() {
                 ))}
                 <button
                   onClick={handleNewHand}
-                  className="mt-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors"
+                  className="mt-2 px-8 py-2.5 bg-white text-black font-medium text-xs tracking-wider uppercase hover:bg-[#e5e5e5] transition-all"
                 >
                   Next Hand
                 </button>
@@ -196,7 +217,7 @@ export default function PlayPage() {
         )}
 
         {error && (
-          <div className="mt-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-300 text-center text-sm max-w-md mx-auto">
+          <div className="mt-4 p-3 bg-[#1a0000] border border-[#441111] text-[#ff4444] text-center text-xs max-w-md mx-auto">
             {error}
           </div>
         )}

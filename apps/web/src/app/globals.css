@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #e5e5e5;
+  --surface: #111111;
+  --surface-hover: #1a1a1a;
+  --border: #222222;
+  --border-hover: #333333;
+  --muted: #666666;
+  --accent: #ffffff;
+  --accent-green: #00dc82;
+  --accent-red: #ff4444;
+  --accent-blue: #3b82f6;
+  --accent-yellow: #fbbf24;
 }
 
 @theme inline {
@@ -12,15 +22,59 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+/* Custom range slider for Musinsa-style */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 32px;
+}
+input[type="range"]::-webkit-slider-track {
+  height: 2px;
+  background: #333;
+  border-radius: 1px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  margin-top: -7px;
+  border: none;
+  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+}
+input[type="range"]::-moz-range-track {
+  height: 2px;
+  background: #333;
+  border-radius: 1px;
+  border: none;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
 }

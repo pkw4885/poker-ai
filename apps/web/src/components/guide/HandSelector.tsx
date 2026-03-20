@@ -2,10 +2,10 @@
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 const SUITS = [
-  { key: "s", symbol: "\u2660", color: "text-gray-900 dark:text-white" },
-  { key: "h", symbol: "\u2665", color: "text-red-600" },
-  { key: "d", symbol: "\u2666", color: "text-blue-600" },
-  { key: "c", symbol: "\u2663", color: "text-green-700" },
+  { key: "s", symbol: "\u2660", color: "text-white" },
+  { key: "h", symbol: "\u2665", color: "text-[#ff4444]" },
+  { key: "d", symbol: "\u2666", color: "text-[#3b82f6]" },
+  { key: "c", symbol: "\u2663", color: "text-[#00dc82]" },
 ];
 
 interface HandSelectorProps {
@@ -28,9 +28,9 @@ export default function HandSelector({
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-[2px]">
       {SUITS.map((suit) => (
-        <div key={suit.key} className="flex gap-0.5">
+        <div key={suit.key} className="flex gap-[2px]">
           {RANKS.map((rank) => {
             const card = `${rank}${suit.key}`;
             const isSelected = selected.includes(card);
@@ -38,16 +38,20 @@ export default function HandSelector({
               <button
                 key={card}
                 onClick={() => toggleCard(card)}
-                className={`w-8 h-10 text-xs font-medium rounded border transition-all flex flex-col items-center justify-center ${
+                className={`w-7 h-9 md:w-9 md:h-11 text-[10px] md:text-xs font-medium transition-all flex flex-col items-center justify-center border ${
                   isSelected
-                    ? "bg-blue-600 border-blue-400 text-white scale-105"
-                    : "bg-gray-700 border-gray-600 hover:bg-gray-600"
+                    ? "bg-white border-white text-black"
+                    : "bg-[#111] border-[#222] hover:border-[#444]"
                 }`}
               >
-                <span className={isSelected ? "text-white" : "text-gray-300"}>
+                <span className={isSelected ? "text-black font-bold" : "text-[#999]"}>
                   {rank}
                 </span>
-                <span className={isSelected ? "text-white" : suit.color}>
+                <span
+                  className={
+                    isSelected ? "text-black text-[8px] md:text-[10px]" : `${suit.color} text-[8px] md:text-[10px]`
+                  }
+                >
                   {suit.symbol}
                 </span>
               </button>
@@ -55,8 +59,8 @@ export default function HandSelector({
           })}
         </div>
       ))}
-      <div className="text-xs text-gray-500 mt-1">
-        Selected: {selected.length}/{maxCards} cards
+      <div className="text-[10px] text-[#444] mt-2 tracking-wider">
+        {selected.length}/{maxCards} SELECTED
       </div>
     </div>
   );

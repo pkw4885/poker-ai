@@ -2,53 +2,86 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      <main className="flex flex-col items-center justify-center min-h-screen px-6">
-        <h1 className="text-5xl font-bold mb-4 tracking-tight">
+    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5]">
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-[#1a1a1a]">
+        <span className="text-sm font-semibold tracking-widest uppercase text-white">
           Poker AI
+        </span>
+        <div className="flex gap-6 text-xs text-[#666] uppercase tracking-wider">
+          <Link href="/guide" className="hover:text-white transition-colors">
+            Guide
+          </Link>
+          <Link href="/play" className="hover:text-white transition-colors">
+            Play
+          </Link>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <main className="flex flex-col items-center justify-center px-6 pt-24 pb-16 md:pt-40 md:pb-24">
+        <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-[#555] mb-4">
+          Texas Hold&apos;em AI System
+        </p>
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-3">
+          POKER AI
         </h1>
-        <p className="text-xl text-gray-400 mb-12 text-center max-w-lg">
-          Texas Hold&apos;em AI System — WSOP Rules, GTO+
+        <p className="text-sm md:text-base text-[#666] mb-16 text-center max-w-md">
+          WSOP Rules &middot; GTO+ Strategy &middot; Self-Improving
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
           <Link
             href="/guide"
-            className="group flex flex-col items-center p-8 bg-gray-800/50 border border-gray-700 rounded-2xl hover:border-emerald-500 hover:bg-gray-800 transition-all"
+            className="group flex flex-col p-6 md:p-8 bg-[#111] border border-[#222] hover:border-[#444] transition-all"
           >
-            <div className="text-4xl mb-4">&#9824;</div>
-            <h2 className="text-xl font-semibold mb-2 group-hover:text-emerald-400 transition-colors">
-              Poker Guide
+            <span className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-4">
+              01
+            </span>
+            <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-[#00dc82] transition-colors">
+              Guide
             </h2>
-            <p className="text-gray-400 text-center text-sm">
-              Situation-based optimal action recommendations
+            <p className="text-xs text-[#666] leading-relaxed">
+              Situation-based optimal action recommendations for preflop and beyond.
             </p>
           </Link>
 
           <Link
             href="/play"
-            className="group flex flex-col items-center p-8 bg-gray-800/50 border border-gray-700 rounded-2xl hover:border-blue-500 hover:bg-gray-800 transition-all"
+            className="group flex flex-col p-6 md:p-8 bg-[#111] border border-[#222] hover:border-[#444] transition-all"
           >
-            <div className="text-4xl mb-4">&#9830;</div>
-            <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-400 transition-colors">
+            <span className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-4">
+              02
+            </span>
+            <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-[#00dc82] transition-colors">
               Play vs AI
             </h2>
-            <p className="text-gray-400 text-center text-sm">
-              Play against 1~7 AI opponents
+            <p className="text-xs text-[#666] leading-relaxed">
+              Challenge 1-7 AI opponents with adjustable difficulty levels.
             </p>
           </Link>
 
-          <div className="group flex flex-col items-center p-8 bg-gray-800/50 border border-gray-700 rounded-2xl opacity-60 cursor-not-allowed">
-            <div className="text-4xl mb-4">&#9829;</div>
-            <h2 className="text-xl font-semibold mb-2">
+          <div className="group flex flex-col p-6 md:p-8 bg-[#111] border border-[#1a1a1a] opacity-40 cursor-not-allowed">
+            <span className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-4">
+              03
+            </span>
+            <h2 className="text-lg font-semibold text-white mb-2">
               ParkPoker
             </h2>
-            <p className="text-gray-400 text-center text-sm">
+            <p className="text-xs text-[#666] leading-relaxed">
               Elite AI 1v1 — Coming Soon
             </p>
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="mt-auto px-6 py-6 border-t border-[#111] text-center">
+        <p className="text-[10px] text-[#444] tracking-wider uppercase">
+          Built with CFR + Deep RL
+        </p>
+      </footer>
     </div>
   );
 }

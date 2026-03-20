@@ -44,91 +44,99 @@ function getRecommendation(handKey: string, position: string) {
 
   if (isTier1) {
     return {
-      action: "Raise",
+      action: "RAISE",
       confidence: 0.95,
       reasoning: "Premium hand. Raise from any position. 3-bet if facing a raise.",
-      color: "text-emerald-400",
+      tier: "Premium",
     };
   }
   if (isTier2) {
     return {
-      action: earlyPos ? "Raise" : "Raise",
+      action: "RAISE",
       confidence: 0.85,
       reasoning: "Strong hand. Open raise from any position. Call or 3-bet vs a raise.",
-      color: "text-emerald-400",
+      tier: "Strong",
     };
   }
   if (isTier3) {
     if (earlyPos) {
       return {
-        action: "Raise / Call",
+        action: "RAISE / CALL",
         confidence: 0.7,
         reasoning: "Solid hand. Open raise from early position. Call a raise with position.",
-        color: "text-blue-400",
+        tier: "Solid",
       };
     }
     return {
-      action: "Raise",
+      action: "RAISE",
       confidence: 0.8,
       reasoning: "Solid hand in late position. Raise for value.",
-      color: "text-emerald-400",
+      tier: "Solid",
     };
   }
   if (isTier4Pair) {
     if (earlyPos) {
       return {
-        action: "Call / Fold",
+        action: "CALL / FOLD",
         confidence: 0.55,
         reasoning: "Small pair. Set-mine if the price is right, fold to large raises.",
-        color: "text-yellow-400",
+        tier: "Marginal",
       };
     }
     return {
-      action: "Raise / Call",
+      action: "RAISE / CALL",
       confidence: 0.65,
       reasoning: "Small pair in position. Can raise to steal or call to set-mine.",
-      color: "text-blue-400",
+      tier: "Marginal",
     };
   }
 
-  // Suited connectors
   const suited = handKey.endsWith("s");
   if (suited && latePos) {
     return {
-      action: "Raise / Call",
+      action: "RAISE / CALL",
       confidence: 0.6,
       reasoning: "Suited hand in position. Good playability post-flop.",
-      color: "text-blue-400",
+      tier: "Speculative",
     };
   }
 
   if (earlyPos) {
     return {
-      action: "Fold",
+      action: "FOLD",
       confidence: 0.75,
       reasoning: "Weak hand in early position. Fold and wait for better spots.",
-      color: "text-red-400",
+      tier: "Weak",
     };
   }
 
   if (latePos) {
     return {
-      action: "Raise / Fold",
+      action: "RAISE / FOLD",
       confidence: 0.5,
       reasoning: "Marginal hand. Can steal blinds in late position if unopened.",
-      color: "text-yellow-400",
+      tier: "Marginal",
     };
   }
 
   return {
-    action: "Check / Fold",
+    action: "CHECK / FOLD",
     confidence: 0.6,
     reasoning: blinds
       ? "Check from the big blind if possible, fold to raises."
       : "Fold to aggression, play cautiously.",
-    color: "text-yellow-400",
+    tier: "Weak",
   };
 }
+
+const TIER_STYLES: Record<string, { bar: string; text: string }> = {
+  Premium: { bar: "bg-white", text: "text-white" },
+  Strong: { bar: "bg-[#00dc82]", text: "text-[#00dc82]" },
+  Solid: { bar: "bg-[#3b82f6]", text: "text-[#3b82f6]" },
+  Marginal: { bar: "bg-[#fbbf24]", text: "text-[#fbbf24]" },
+  Speculative: { bar: "bg-[#f97316]", text: "text-[#f97316]" },
+  Weak: { bar: "bg-[#555]", text: "text-[#555]" },
+};
 
 export default function GuidePage() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
@@ -136,58 +144,90 @@ export default function GuidePage() {
 
   const handKey = getHandKey(selectedCards);
   const recommendation = getRecommendation(handKey, position);
+  const tierStyle = recommendation ? TIER_STYLES[recommendation.tier] || TIER_STYLES.Weak : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      <header className="p-4">
+    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5]">
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-[#1a1a1a]">
         <Link
           href="/"
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-xs text-[#666] hover:text-white transition-colors uppercase tracking-wider"
         >
           &larr; Back
         </Link>
-      </header>
+        <span className="text-xs font-semibold tracking-widest uppercase text-[#444]">
+          Guide
+        </span>
+        <div className="w-12" />
+      </nav>
 
-      <main className="flex flex-col items-center px-4 py-6 gap-6 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold">Poker Guide</h1>
-        <p className="text-gray-400 text-center text-sm">
-          Select your hole cards and position to get preflop recommendations.
-        </p>
+      <main className="flex flex-col items-center px-4 py-8 md:py-12 gap-8 max-w-xl mx-auto">
+        <div className="text-center">
+          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+            Preflop Guide
+          </h1>
+          <p className="text-xs text-[#555] mt-2 tracking-wide">
+            Select your hole cards and position
+          </p>
+        </div>
 
         {/* Position */}
         <div className="w-full">
-          <h2 className="text-sm font-medium text-gray-400 mb-2">Position</h2>
+          <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-3 block">
+            Position
+          </label>
           <PositionSelector selected={position} onSelect={setPosition} />
         </div>
 
         {/* Hand selector */}
         <div className="w-full">
-          <h2 className="text-sm font-medium text-gray-400 mb-2">
+          <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-3 block">
             Your Cards
-          </h2>
+          </label>
           <HandSelector selected={selectedCards} onSelect={setSelectedCards} />
         </div>
 
         {/* Recommendation */}
-        {recommendation && selectedCards.length === 2 && (
-          <div className="w-full p-6 bg-gray-800/80 border border-gray-700 rounded-2xl">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-gray-500">
+        {recommendation && selectedCards.length === 2 && tierStyle && (
+          <div className="w-full border border-[#222] bg-[#111] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[10px] tracking-[0.2em] uppercase text-[#555]">
                 {handKey} &middot; {position}
               </span>
-              <span className="text-xs text-gray-500">
-                Confidence: {Math.round(recommendation.confidence * 100)}%
+              <span className={`text-[10px] tracking-wider uppercase ${tierStyle.text}`}>
+                {recommendation.tier}
               </span>
             </div>
-            <div className={`text-2xl font-bold mb-2 ${recommendation.color}`}>
+
+            <div className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
               {recommendation.action}
             </div>
-            <p className="text-sm text-gray-400">{recommendation.reasoning}</p>
+
+            <p className="text-xs text-[#666] leading-relaxed mb-4">
+              {recommendation.reasoning}
+            </p>
+
+            {/* Confidence bar */}
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] text-[#555] uppercase tracking-wider">
+                Confidence
+              </span>
+              <div className="flex-1 h-[2px] bg-[#222] relative">
+                <div
+                  className={`absolute inset-y-0 left-0 ${tierStyle.bar}`}
+                  style={{ width: `${recommendation.confidence * 100}%` }}
+                />
+              </div>
+              <span className="text-[10px] text-[#666] font-mono">
+                {Math.round(recommendation.confidence * 100)}%
+              </span>
+            </div>
           </div>
         )}
 
         {selectedCards.length < 2 && (
-          <div className="text-sm text-gray-600 text-center">
+          <div className="text-xs text-[#444] text-center py-8">
             Select 2 cards to see recommendation
           </div>
         )}

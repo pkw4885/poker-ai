@@ -13,12 +13,10 @@ interface PokerTableProps {
   onAction: (type: string, amount?: number) => void;
 }
 
-// Player positions around an oval table (up to 8 players)
-// Position 0 (human) is at the bottom center
 const SEAT_POSITIONS: Record<number, { top: string; left: string }[]> = {
   2: [
-    { top: "85%", left: "50%" },   // 0: bottom center (human)
-    { top: "15%", left: "50%" },   // 1: top center
+    { top: "85%", left: "50%" },
+    { top: "15%", left: "50%" },
   ],
   3: [
     { top: "85%", left: "50%" },
@@ -79,14 +77,14 @@ export default function PokerTable({
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-4xl mx-auto">
       {/* Table */}
-      <div className="relative w-full aspect-[16/10] max-h-[500px]">
-        {/* Table felt */}
-        <div className="absolute inset-[5%] rounded-[50%] bg-gradient-to-b from-green-800 to-green-900 border-8 border-amber-900 shadow-2xl" />
+      <div className="relative w-full aspect-[16/10] max-h-[420px] md:max-h-[500px]">
+        {/* Table surface — dark felt */}
+        <div className="absolute inset-[5%] rounded-[50%] bg-gradient-to-b from-[#0d1f0d] to-[#0a1a0a] border-2 border-[#1a2e1a] shadow-[0_0_60px_rgba(0,0,0,0.5)]" />
 
-        {/* Inner felt line */}
-        <div className="absolute inset-[10%] rounded-[50%] border-2 border-green-700/50" />
+        {/* Inner line */}
+        <div className="absolute inset-[10%] rounded-[50%] border border-[#1a2e1a]/50" />
 
-        {/* Community cards + pot (center) */}
+        {/* Community cards + pot */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
           <CommunityCards board={gameState.board} />
           <PotDisplay pots={gameState.pots} totalPot={gameState.total_pot} />
@@ -113,7 +111,7 @@ export default function PokerTable({
       />
 
       {/* Phase indicator */}
-      <div className="text-xs text-gray-500">
+      <div className="text-[10px] text-[#444] tracking-[0.2em] uppercase">
         Hand #{gameState.hand_number} &middot; {formatPhase(gameState.phase)}
       </div>
     </div>

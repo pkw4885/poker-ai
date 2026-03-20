@@ -9,9 +9,9 @@ interface CardProps {
 }
 
 const SIZE_CLASSES = {
-  sm: "w-10 h-14 text-xs",
-  md: "w-14 h-20 text-sm",
-  lg: "w-18 h-26 text-lg",
+  sm: "w-8 h-11 md:w-10 md:h-14 text-[10px] md:text-xs",
+  md: "w-10 h-14 md:w-14 md:h-20 text-xs md:text-sm",
+  lg: "w-14 h-20 md:w-18 md:h-26 text-sm md:text-lg",
 };
 
 export default function Card({ cardInt, faceDown = false, size = "md" }: CardProps) {
@@ -20,9 +20,9 @@ export default function Card({ cardInt, faceDown = false, size = "md" }: CardPro
   if (faceDown || cardInt === undefined) {
     return (
       <div
-        className={`${sizeClass} rounded-lg border-2 border-gray-600 bg-gradient-to-br from-blue-800 to-blue-900 flex items-center justify-center shadow-lg`}
+        className={`${sizeClass} border border-[#333] bg-[#1a1a1a] flex items-center justify-center`}
       >
-        <div className="w-3/4 h-3/4 border border-blue-400/30 rounded-sm bg-blue-700/50" />
+        <div className="w-3/4 h-3/4 border border-[#333] bg-[#111]" />
       </div>
     );
   }
@@ -30,16 +30,16 @@ export default function Card({ cardInt, faceDown = false, size = "md" }: CardPro
   const { rank, suit } = decodeCard(cardInt);
   const displayRank = rank === "T" ? "10" : rank;
   const suitSymbol = getSuitSymbol(suit);
-  const colorClass = isRedSuit(suit) ? "text-red-600" : "text-gray-900";
+  const isRed = isRedSuit(suit);
 
   return (
     <div
-      className={`${sizeClass} rounded-lg border-2 border-gray-300 bg-white flex flex-col items-center justify-center shadow-lg relative`}
+      className={`${sizeClass} border border-[#444] bg-white flex flex-col items-center justify-center relative`}
     >
-      <span className={`font-bold ${colorClass} leading-none`}>
+      <span className={`font-bold leading-none ${isRed ? "text-[#cc0000]" : "text-[#111]"}`}>
         {displayRank}
       </span>
-      <span className={`${colorClass} leading-none`}>
+      <span className={`leading-none ${isRed ? "text-[#cc0000]" : "text-[#111]"}`}>
         {suitSymbol}
       </span>
     </div>

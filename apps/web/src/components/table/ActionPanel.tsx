@@ -31,21 +31,22 @@ export default function ActionPanel({
 
   if (!isMyTurn) {
     return (
-      <div className="flex items-center justify-center h-20">
-        <span className="text-gray-500 text-sm animate-pulse">
-          Waiting for opponents...
+      <div className="flex items-center justify-center h-16 md:h-20">
+        <span className="text-[10px] text-[#444] tracking-[0.2em] uppercase animate-pulse">
+          Waiting for opponents
         </span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 p-4 bg-gray-800/80 rounded-xl border border-gray-700">
-      <div className="flex gap-3">
+    <div className="flex flex-col items-center gap-3 p-4 md:p-5 bg-[#111] border border-[#222] w-full max-w-lg mx-auto">
+      {/* Action buttons */}
+      <div className="flex gap-2 w-full">
         {foldAction && (
           <button
             onClick={() => onAction("fold")}
-            className="px-6 py-2 bg-red-700 hover:bg-red-600 text-white font-medium rounded-lg transition-colors"
+            className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-transparent border border-[#333] text-[#666] hover:border-[#ff4444] hover:text-[#ff4444] transition-all"
           >
             Fold
           </button>
@@ -53,7 +54,7 @@ export default function ActionPanel({
         {checkAction && (
           <button
             onClick={() => onAction("check")}
-            className="px-6 py-2 bg-green-700 hover:bg-green-600 text-white font-medium rounded-lg transition-colors"
+            className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-transparent border border-[#333] text-[#999] hover:border-[#00dc82] hover:text-[#00dc82] transition-all"
           >
             Check
           </button>
@@ -61,7 +62,7 @@ export default function ActionPanel({
         {callAction && (
           <button
             onClick={() => onAction("call")}
-            className="px-6 py-2 bg-blue-700 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+            className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-transparent border border-[#333] text-[#999] hover:border-white hover:text-white transition-all"
           >
             Call {callAction.amount}
           </button>
@@ -69,28 +70,33 @@ export default function ActionPanel({
         {raiseAction && (
           <button
             onClick={handleRaise}
-            className="px-6 py-2 bg-yellow-600 hover:bg-yellow-500 text-white font-medium rounded-lg transition-colors"
+            className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-white text-black border border-white hover:bg-[#e5e5e5] transition-all"
           >
             Raise {raiseAmount || minRaise}
           </button>
         )}
       </div>
 
+      {/* Raise slider */}
       {raiseAction && (
-        <div className="flex items-center gap-3 w-full max-w-md">
-          <span className="text-xs text-gray-400">{minRaise}</span>
+        <div className="flex items-center gap-3 w-full">
+          <span className="text-[10px] text-[#555] font-mono w-10 text-right">
+            {minRaise}
+          </span>
           <input
             type="range"
             min={minRaise}
             max={maxRaise}
             value={raiseAmount || minRaise}
             onChange={(e) => setRaiseAmount(parseInt(e.target.value))}
-            className="flex-1 accent-yellow-500"
+            className="flex-1"
           />
-          <span className="text-xs text-gray-400">{maxRaise}</span>
+          <span className="text-[10px] text-[#555] font-mono w-10">
+            {maxRaise}
+          </span>
           <button
             onClick={() => onAction("all_in")}
-            className="px-3 py-1 text-xs bg-red-800 hover:bg-red-700 text-white rounded transition-colors"
+            className="px-3 py-1.5 text-[10px] font-medium tracking-wider uppercase border border-[#fbbf24] text-[#fbbf24] hover:bg-[#fbbf24] hover:text-black transition-all"
           >
             All In
           </button>

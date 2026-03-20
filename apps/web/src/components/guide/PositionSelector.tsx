@@ -25,10 +25,10 @@ export default function PositionSelector({
           key={pos.key}
           onClick={() => onSelect(pos.key)}
           title={pos.desc}
-          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-4 py-2 text-xs font-medium tracking-wider uppercase transition-all border ${
             selected === pos.key
-              ? "bg-emerald-600 text-white"
-              : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+              ? "bg-white text-black border-white"
+              : "bg-transparent text-[#666] border-[#333] hover:border-[#555] hover:text-[#999]"
           }`}
         >
           {pos.label}
