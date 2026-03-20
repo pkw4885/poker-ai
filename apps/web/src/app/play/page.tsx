@@ -5,6 +5,7 @@ import Link from "next/link";
 import PokerTable from "@/components/table/PokerTable";
 import { createGame, sendAction, startNewHand } from "@/lib/api";
 import type { GameStateView, ValidAction, HandResult } from "@/types/game";
+import { useI18n, LanguageToggle } from "@/lib/i18n";
 
 type Difficulty = "easy" | "medium" | "hard";
 
@@ -30,6 +31,14 @@ export default function PlayPage() {
   const [numOpponents, setNumOpponents] = useState(3);
   const [startingStack] = useState(1000);
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+
+  const { t } = useI18n();
+
+  const difficultyKeys: Record<Difficulty, "play.easy" | "play.medium" | "play.hard"> = {
+    easy: "play.easy",
+    medium: "play.medium",
+    hard: "play.hard",
+  };
 
   const applyResponse = useCallback((res: GameResponse) => {
     setGameState(res.game_state);
@@ -93,12 +102,12 @@ export default function PlayPage() {
           href="/"
           className="text-xs text-[#666] hover:text-white transition-colors uppercase tracking-wider"
         >
-          &larr; Back
+          &larr; {t("common.back")}
         </Link>
         <span className="text-xs font-semibold tracking-widest uppercase text-[#444]">
-          {gameId ? `Game ${gameId.slice(0, 8)}` : "Play"}
+          {gameId ? `Game ${gameId.slice(0, 8)}` : t("nav.play")}
         </span>
-        <div className="w-12" />
+        <LanguageToggle />
       </nav>
 
       <main className="px-4 pb-8">
@@ -107,10 +116,10 @@ export default function PlayPage() {
           <div className="flex flex-col items-center pt-16 md:pt-24 gap-10 max-w-sm mx-auto">
             <div className="text-center">
               <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                Play vs AI
+                {t("play.title")}
               </h1>
               <p className="text-xs text-[#555] mt-2">
-                Configure your game settings
+                {t("play.configure")}
               </p>
             </div>
 
@@ -119,7 +128,7 @@ export default function PlayPage() {
               <div>
                 <div className="flex justify-between mb-3">
                   <label className="text-[10px] tracking-[0.2em] uppercase text-[#555]">
-                    Opponents
+                    {t("play.opponents")}
                   </label>
                   <span className="text-xs text-white font-mono">
                     {numOpponents}
@@ -138,7 +147,7 @@ export default function PlayPage() {
               {/* Difficulty */}
               <div>
                 <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-3 block">
-                  Difficulty
+                  {t("play.difficulty")}
                 </label>
                 <div className="flex gap-2">
                   {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
@@ -151,7 +160,7 @@ export default function PlayPage() {
                           : "bg-transparent text-[#666] border-[#333] hover:border-[#555]"
                       }`}
                     >
-                      {d}
+                      {t(difficultyKeys[d])}
                     </button>
                   ))}
                 </div>
@@ -163,7 +172,7 @@ export default function PlayPage() {
                 disabled={loading}
                 className="mt-4 py-3 bg-white text-black font-semibold text-sm tracking-wider uppercase hover:bg-[#e5e5e5] disabled:bg-[#333] disabled:text-[#666] transition-all"
               >
-                {loading ? "Creating..." : "Start Game"}
+                {loading ? t("play.creating") : t("play.startGame")}
               </button>
             </div>
           </div>
@@ -181,13 +190,13 @@ export default function PlayPage() {
             {handOver && handResults.length > 0 && (
               <div className="flex flex-col items-center gap-3 p-5 bg-[#111] border border-[#222] max-w-md w-full">
                 <span className="text-[10px] tracking-[0.2em] uppercase text-[#555]">
-                  Hand Result
+                  {t("play.handResult")}
                 </span>
                 {handResults.map((r, i) => (
                   <div key={i} className="text-sm text-center">
                     <span className="text-[#999]">
                       {r.hand_class === "fold"
-                        ? "Won by fold"
+                        ? t("play.wonByFold")
                         : `${r.hand_class}`}
                     </span>
                     <span className="text-[#00dc82] ml-2 font-mono">
@@ -198,7 +207,7 @@ export default function PlayPage() {
                       {r.winners
                         .map((w) =>
                           w === 0
-                            ? "You"
+                            ? t("play.you")
                             : gameState.players[w]?.name || `Player ${w}`
                         )
                         .join(", ")}
@@ -209,7 +218,7 @@ export default function PlayPage() {
                   onClick={handleNewHand}
                   className="mt-2 px-8 py-2.5 bg-white text-black font-medium text-xs tracking-wider uppercase hover:bg-[#e5e5e5] transition-all"
                 >
-                  Next Hand
+                  {t("play.nextHand")}
                 </button>
               </div>
             )}

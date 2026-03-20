@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useI18n, LanguageToggle } from "@/lib/i18n";
 
 export default function Home() {
+  const { t } = useI18n();
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5]">
       {/* Nav */}
@@ -8,26 +13,33 @@ export default function Home() {
         <span className="text-sm font-semibold tracking-widest uppercase text-white">
           Poker AI
         </span>
-        <div className="flex gap-6 text-xs text-[#666] uppercase tracking-wider">
+        <div className="flex items-center gap-6 text-xs text-[#666] uppercase tracking-wider">
           <Link href="/guide" className="hover:text-white transition-colors">
-            Guide
+            {t("nav.guide")}
           </Link>
           <Link href="/play" className="hover:text-white transition-colors">
-            Play
+            {t("nav.play")}
           </Link>
+          <Link href="/rooms" className="hover:text-white transition-colors">
+            Rooms
+          </Link>
+          <Link href="/auth" className="hover:text-white transition-colors">
+            Login
+          </Link>
+          <LanguageToggle />
         </div>
       </nav>
 
       {/* Hero */}
       <main className="flex flex-col items-center justify-center px-6 pt-24 pb-16 md:pt-40 md:pb-24">
         <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-[#555] mb-4">
-          Texas Hold&apos;em AI System
+          {t("home.subtitle")}
         </p>
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-3">
-          POKER AI
+          {t("home.title")}
         </h1>
         <p className="text-sm md:text-base text-[#666] mb-16 text-center max-w-md">
-          WSOP Rules &middot; GTO+ Strategy &middot; Self-Improving
+          {t("home.tagline")}
         </p>
 
         {/* Feature Cards */}
@@ -40,10 +52,10 @@ export default function Home() {
               01
             </span>
             <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-[#00dc82] transition-colors">
-              Guide
+              {t("home.card1.title")}
             </h2>
             <p className="text-xs text-[#666] leading-relaxed">
-              Situation-based optimal action recommendations for preflop and beyond.
+              {t("home.card1.desc")}
             </p>
           </Link>
 
@@ -55,10 +67,10 @@ export default function Home() {
               02
             </span>
             <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-[#00dc82] transition-colors">
-              Play vs AI
+              {t("home.card2.title")}
             </h2>
             <p className="text-xs text-[#666] leading-relaxed">
-              Challenge 1-7 AI opponents with adjustable difficulty levels.
+              {t("home.card2.desc")}
             </p>
           </Link>
 
@@ -67,10 +79,10 @@ export default function Home() {
               03
             </span>
             <h2 className="text-lg font-semibold text-white mb-2">
-              ParkPoker
+              {t("home.card3.title")}
             </h2>
             <p className="text-xs text-[#666] leading-relaxed">
-              Elite AI 1v1 — Coming Soon
+              {t("home.card3.desc")}
             </p>
           </div>
         </div>
@@ -79,7 +91,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-auto px-6 py-6 border-t border-[#111] text-center">
         <p className="text-[10px] text-[#444] tracking-wider uppercase">
-          Built with CFR + Deep RL
+          {t("home.footer")}
         </p>
       </footer>
     </div>

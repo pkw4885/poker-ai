@@ -172,9 +172,9 @@ class ActiveGame:
 
         if state.is_hand_over:
             response["hand_results"] = self.game.hand_results
-            # Show all hole cards at showdown
+            # Only reveal cards of players still in hand at showdown
             for p in state.players:
-                if p.is_in_hand or True:  # Show all for now
+                if p.is_in_hand:
                     for pv in response["game_state"]["players"]:
                         if pv["id"] == p.id:
                             pv["hole_cards"] = p.hole_cards

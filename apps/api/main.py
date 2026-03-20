@@ -3,7 +3,8 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import game, guide, health
+from database import init_db
+from routers import auth, game, guide, health, rooms, ws
 
 app = FastAPI(
     title="Poker AI API",
@@ -32,3 +33,11 @@ app.add_middleware(
 app.include_router(health.router, tags=["health"])
 app.include_router(game.router, prefix="/api/game", tags=["game"])
 app.include_router(guide.router, prefix="/api/guide", tags=["guide"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(rooms.router, prefix="/api/rooms", tags=["rooms"])
+app.include_router(ws.router, prefix="/ws", tags=["websocket"])
+
+
+@app.on_event("startup")
+async def startup() -> None:
+    init_db()

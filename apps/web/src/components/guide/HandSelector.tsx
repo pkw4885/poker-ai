@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
+
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 const SUITS = [
   { key: "s", symbol: "\u2660", color: "text-white" },
@@ -19,6 +21,8 @@ export default function HandSelector({
   onSelect,
   maxCards = 2,
 }: HandSelectorProps) {
+  const { t } = useI18n();
+
   const toggleCard = (card: string) => {
     if (selected.includes(card)) {
       onSelect(selected.filter((c) => c !== card));
@@ -60,7 +64,7 @@ export default function HandSelector({
         </div>
       ))}
       <div className="text-[10px] text-[#444] mt-2 tracking-wider">
-        {selected.length}/{maxCards} SELECTED
+        {selected.length}/{maxCards} {t("common.selected")}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import type { ValidAction } from "@/types/game";
+import { useI18n } from "@/lib/i18n";
 
 interface ActionPanelProps {
   validActions: ValidAction[];
@@ -15,6 +16,7 @@ export default function ActionPanel({
   onAction,
 }: ActionPanelProps) {
   const [raiseAmount, setRaiseAmount] = useState(0);
+  const { t } = useI18n();
 
   const foldAction = validActions.find((a) => a.type === "fold");
   const checkAction = validActions.find((a) => a.type === "check");
@@ -33,7 +35,7 @@ export default function ActionPanel({
     return (
       <div className="flex items-center justify-center h-16 md:h-20">
         <span className="text-[10px] text-[#444] tracking-[0.2em] uppercase animate-pulse">
-          Waiting for opponents
+          {t("action.waiting")}
         </span>
       </div>
     );
@@ -48,7 +50,7 @@ export default function ActionPanel({
             onClick={() => onAction("fold")}
             className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-transparent border border-[#333] text-[#666] hover:border-[#ff4444] hover:text-[#ff4444] transition-all"
           >
-            Fold
+            {t("action.fold")}
           </button>
         )}
         {checkAction && (
@@ -56,7 +58,7 @@ export default function ActionPanel({
             onClick={() => onAction("check")}
             className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-transparent border border-[#333] text-[#999] hover:border-[#00dc82] hover:text-[#00dc82] transition-all"
           >
-            Check
+            {t("action.check")}
           </button>
         )}
         {callAction && (
@@ -64,7 +66,7 @@ export default function ActionPanel({
             onClick={() => onAction("call")}
             className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-transparent border border-[#333] text-[#999] hover:border-white hover:text-white transition-all"
           >
-            Call {callAction.amount}
+            {t("action.call")} {callAction.amount}
           </button>
         )}
         {raiseAction && (
@@ -72,7 +74,7 @@ export default function ActionPanel({
             onClick={handleRaise}
             className="flex-1 py-2.5 text-xs font-medium tracking-wider uppercase bg-white text-black border border-white hover:bg-[#e5e5e5] transition-all"
           >
-            Raise {raiseAmount || minRaise}
+            {t("action.raise")} {raiseAmount || minRaise}
           </button>
         )}
       </div>
@@ -98,7 +100,7 @@ export default function ActionPanel({
             onClick={() => onAction("all_in")}
             className="px-3 py-1.5 text-[10px] font-medium tracking-wider uppercase border border-[#fbbf24] text-[#fbbf24] hover:bg-[#fbbf24] hover:text-black transition-all"
           >
-            All In
+            {t("action.allIn")}
           </button>
         </div>
       )}

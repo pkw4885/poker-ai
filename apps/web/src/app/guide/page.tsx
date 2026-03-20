@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import HandSelector from "@/components/guide/HandSelector";
 import PositionSelector from "@/components/guide/PositionSelector";
+import { useI18n, LanguageToggle } from "@/lib/i18n";
 
 // Preflop hand strength tiers
 const TIER_1 = ["AA", "KK", "QQ", "AKs"];
@@ -29,7 +30,27 @@ function getHandKey(cards: string[]): string {
   return `${high}${low}${suited ? "s" : "o"}`;
 }
 
-function getRecommendation(handKey: string, position: string) {
+type ReasoningKey =
+  | "reason.premium"
+  | "reason.strong"
+  | "reason.solid.early"
+  | "reason.solid.late"
+  | "reason.smallpair.early"
+  | "reason.smallpair.late"
+  | "reason.suited.late"
+  | "reason.weak.early"
+  | "reason.marginal.late"
+  | "reason.weak.blinds"
+  | "reason.weak.default";
+
+interface Recommendation {
+  action: string;
+  confidence: number;
+  reasoningKey: ReasoningKey;
+  tier: string;
+}
+
+function getRecommendation(handKey: string, position: string): Recommendation | null {
   if (!handKey) return null;
 
   const isPair = handKey.length === 2;
@@ -46,7 +67,7 @@ function getRecommendation(handKey: string, position: string) {
     return {
       action: "RAISE",
       confidence: 0.95,
-      reasoning: "Premium hand. Raise from any position. 3-bet if facing a raise.",
+      reasoningKey: "reason.premium",
       tier: "Premium",
     };
   }
@@ -54,7 +75,7 @@ function getRecommendation(handKey: string, position: string) {
     return {
       action: "RAISE",
       confidence: 0.85,
-      reasoning: "Strong hand. Open raise from any position. Call or 3-bet vs a raise.",
+      reasoningKey: "reason.strong",
       tier: "Strong",
     };
   }
@@ -63,14 +84,14 @@ function getRecommendation(handKey: string, position: string) {
       return {
         action: "RAISE / CALL",
         confidence: 0.7,
-        reasoning: "Solid hand. Open raise from early position. Call a raise with position.",
+        reasoningKey: "reason.solid.early",
         tier: "Solid",
       };
     }
     return {
       action: "RAISE",
       confidence: 0.8,
-      reasoning: "Solid hand in late position. Raise for value.",
+      reasoningKey: "reason.solid.late",
       tier: "Solid",
     };
   }
@@ -79,14 +100,14 @@ function getRecommendation(handKey: string, position: string) {
       return {
         action: "CALL / FOLD",
         confidence: 0.55,
-        reasoning: "Small pair. Set-mine if the price is right, fold to large raises.",
+        reasoningKey: "reason.smallpair.early",
         tier: "Marginal",
       };
     }
     return {
       action: "RAISE / CALL",
       confidence: 0.65,
-      reasoning: "Small pair in position. Can raise to steal or call to set-mine.",
+      reasoningKey: "reason.smallpair.late",
       tier: "Marginal",
     };
   }
@@ -96,7 +117,7 @@ function getRecommendation(handKey: string, position: string) {
     return {
       action: "RAISE / CALL",
       confidence: 0.6,
-      reasoning: "Suited hand in position. Good playability post-flop.",
+      reasoningKey: "reason.suited.late",
       tier: "Speculative",
     };
   }
@@ -105,7 +126,7 @@ function getRecommendation(handKey: string, position: string) {
     return {
       action: "FOLD",
       confidence: 0.75,
-      reasoning: "Weak hand in early position. Fold and wait for better spots.",
+      reasoningKey: "reason.weak.early",
       tier: "Weak",
     };
   }
@@ -114,7 +135,7 @@ function getRecommendation(handKey: string, position: string) {
     return {
       action: "RAISE / FOLD",
       confidence: 0.5,
-      reasoning: "Marginal hand. Can steal blinds in late position if unopened.",
+      reasoningKey: "reason.marginal.late",
       tier: "Marginal",
     };
   }
@@ -122,9 +143,7 @@ function getRecommendation(handKey: string, position: string) {
   return {
     action: "CHECK / FOLD",
     confidence: 0.6,
-    reasoning: blinds
-      ? "Check from the big blind if possible, fold to raises."
-      : "Fold to aggression, play cautiously.",
+    reasoningKey: blinds ? "reason.weak.blinds" : "reason.weak.default",
     tier: "Weak",
   };
 }
@@ -141,10 +160,14 @@ const TIER_STYLES: Record<string, { bar: string; text: string }> = {
 export default function GuidePage() {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [position, setPosition] = useState("BTN");
+  const { t } = useI18n();
 
   const handKey = getHandKey(selectedCards);
   const recommendation = getRecommendation(handKey, position);
   const tierStyle = recommendation ? TIER_STYLES[recommendation.tier] || TIER_STYLES.Weak : null;
+
+  const actionKey = recommendation ? `action.${recommendation.action}` as const : null;
+  const tierKey = recommendation ? `tier.${recommendation.tier}` as const : null;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5]">
@@ -154,28 +177,28 @@ export default function GuidePage() {
           href="/"
           className="text-xs text-[#666] hover:text-white transition-colors uppercase tracking-wider"
         >
-          &larr; Back
+          &larr; {t("common.back")}
         </Link>
         <span className="text-xs font-semibold tracking-widest uppercase text-[#444]">
-          Guide
+          {t("nav.guide")}
         </span>
-        <div className="w-12" />
+        <LanguageToggle />
       </nav>
 
       <main className="flex flex-col items-center px-4 py-8 md:py-12 gap-8 max-w-xl mx-auto">
         <div className="text-center">
           <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-            Preflop Guide
+            {t("guide.title")}
           </h1>
           <p className="text-xs text-[#555] mt-2 tracking-wide">
-            Select your hole cards and position
+            {t("guide.subtitle")}
           </p>
         </div>
 
         {/* Position */}
         <div className="w-full">
           <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-3 block">
-            Position
+            {t("guide.position")}
           </label>
           <PositionSelector selected={position} onSelect={setPosition} />
         </div>
@@ -183,7 +206,7 @@ export default function GuidePage() {
         {/* Hand selector */}
         <div className="w-full">
           <label className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-3 block">
-            Your Cards
+            {t("guide.yourCards")}
           </label>
           <HandSelector selected={selectedCards} onSelect={setSelectedCards} />
         </div>
@@ -196,22 +219,22 @@ export default function GuidePage() {
                 {handKey} &middot; {position}
               </span>
               <span className={`text-[10px] tracking-wider uppercase ${tierStyle.text}`}>
-                {recommendation.tier}
+                {tierKey ? t(tierKey) : recommendation.tier}
               </span>
             </div>
 
             <div className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
-              {recommendation.action}
+              {actionKey ? t(actionKey) : recommendation.action}
             </div>
 
             <p className="text-xs text-[#666] leading-relaxed mb-4">
-              {recommendation.reasoning}
+              {t(recommendation.reasoningKey)}
             </p>
 
             {/* Confidence bar */}
             <div className="flex items-center gap-3">
               <span className="text-[10px] text-[#555] uppercase tracking-wider">
-                Confidence
+                {t("common.confidence")}
               </span>
               <div className="flex-1 h-[2px] bg-[#222] relative">
                 <div
@@ -228,7 +251,7 @@ export default function GuidePage() {
 
         {selectedCards.length < 2 && (
           <div className="text-xs text-[#444] text-center py-8">
-            Select 2 cards to see recommendation
+            {t("guide.selectPrompt")}
           </div>
         )}
       </main>

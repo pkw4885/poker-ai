@@ -73,7 +73,8 @@ class GameState:
             if p.id == player_id:
                 pv["hole_cards"] = p.hole_cards
             else:
-                pv["hole_cards"] = [] if p.is_in_hand else p.hole_cards
+                # Always hide opponents' cards; showdown reveal is handled separately
+                pv["hole_cards"] = []
             players_view.append(pv)
 
         return {

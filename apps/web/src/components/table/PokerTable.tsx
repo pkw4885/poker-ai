@@ -5,12 +5,15 @@ import PlayerSeat from "./PlayerSeat";
 import CommunityCards from "./CommunityCards";
 import PotDisplay from "./PotDisplay";
 import ActionPanel from "./ActionPanel";
+import TurnTimer from "./TurnTimer";
+import { useI18n } from "@/lib/i18n";
 
 interface PokerTableProps {
   gameState: GameStateView;
   validActions: ValidAction[];
   isMyTurn: boolean;
   onAction: (type: string, amount?: number) => void;
+  turnDuration?: number;
 }
 
 const SEAT_POSITIONS: Record<number, { top: string; left: string }[]> = {
@@ -70,18 +73,26 @@ export default function PokerTable({
   validActions,
   isMyTurn,
   onAction,
+  turnDuration = 30,
 }: PokerTableProps) {
   const numPlayers = gameState.players.length;
   const positions = SEAT_POSITIONS[numPlayers] || SEAT_POSITIONS[8];
+  const { t } = useI18n();
+
+  const handleTimeout = () => {
+    if (isMyTurn) {
+      onAction("fold");
+    }
+  };
+
+  const phaseKey = `phase.${gameState.phase}` as const;
 
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-4xl mx-auto">
       {/* Table */}
       <div className="relative w-full aspect-[16/10] max-h-[420px] md:max-h-[500px]">
-        {/* Table surface — dark felt */}
+        {/* Table surface */}
         <div className="absolute inset-[5%] rounded-[50%] bg-gradient-to-b from-[#0d1f0d] to-[#0a1a0a] border-2 border-[#1a2e1a] shadow-[0_0_60px_rgba(0,0,0,0.5)]" />
-
-        {/* Inner line */}
         <div className="absolute inset-[10%] rounded-[50%] border border-[#1a2e1a]/50" />
 
         {/* Community cards + pot */}
@@ -99,9 +110,17 @@ export default function PokerTable({
             isCurrentTurn={i === gameState.current_player_idx}
             isHuman={i === 0}
             position={positions[i] || { top: "50%", left: "50%" }}
+            seatIndex={i}
           />
         ))}
       </div>
+
+      {/* Turn timer */}
+      <TurnTimer
+        duration={turnDuration}
+        isActive={isMyTurn}
+        onTimeout={handleTimeout}
+      />
 
       {/* Action panel */}
       <ActionPanel
@@ -112,22 +131,8 @@ export default function PokerTable({
 
       {/* Phase indicator */}
       <div className="text-[10px] text-[#444] tracking-[0.2em] uppercase">
-        Hand #{gameState.hand_number} &middot; {formatPhase(gameState.phase)}
+        {t("table.hand")} #{gameState.hand_number} &middot; {t(phaseKey)}
       </div>
     </div>
   );
-}
-
-function formatPhase(phase: string): string {
-  const labels: Record<string, string> = {
-    waiting: "Waiting",
-    deal_hole: "Dealing",
-    preflop_bet: "Pre-Flop",
-    flop_bet: "Flop",
-    turn_bet: "Turn",
-    river_bet: "River",
-    showdown: "Showdown",
-    hand_over: "Hand Over",
-  };
-  return labels[phase] || phase;
 }

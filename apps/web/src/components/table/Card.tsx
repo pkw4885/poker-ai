@@ -6,6 +6,7 @@ interface CardProps {
   cardInt?: number;
   faceDown?: boolean;
   size?: "sm" | "md" | "lg";
+  dealDelay?: number;
 }
 
 const SIZE_CLASSES = {
@@ -14,13 +15,25 @@ const SIZE_CLASSES = {
   lg: "w-14 h-20 md:w-18 md:h-26 text-sm md:text-lg",
 };
 
-export default function Card({ cardInt, faceDown = false, size = "md" }: CardProps) {
+export default function Card({
+  cardInt,
+  faceDown = false,
+  size = "md",
+  dealDelay,
+}: CardProps) {
   const sizeClass = SIZE_CLASSES[size];
+  const animStyle =
+    dealDelay !== undefined
+      ? {
+          animation: `dealCard 0.3s ease-out ${dealDelay}ms both`,
+        }
+      : {};
 
   if (faceDown || cardInt === undefined) {
     return (
       <div
         className={`${sizeClass} border border-[#333] bg-[#1a1a1a] flex items-center justify-center`}
+        style={animStyle}
       >
         <div className="w-3/4 h-3/4 border border-[#333] bg-[#111]" />
       </div>
@@ -35,11 +48,16 @@ export default function Card({ cardInt, faceDown = false, size = "md" }: CardPro
   return (
     <div
       className={`${sizeClass} border border-[#444] bg-white flex flex-col items-center justify-center relative`}
+      style={animStyle}
     >
-      <span className={`font-bold leading-none ${isRed ? "text-[#cc0000]" : "text-[#111]"}`}>
+      <span
+        className={`font-bold leading-none ${isRed ? "text-[#cc0000]" : "text-[#111]"}`}
+      >
         {displayRank}
       </span>
-      <span className={`leading-none ${isRed ? "text-[#cc0000]" : "text-[#111]"}`}>
+      <span
+        className={`leading-none ${isRed ? "text-[#cc0000]" : "text-[#111]"}`}
+      >
         {suitSymbol}
       </span>
     </div>

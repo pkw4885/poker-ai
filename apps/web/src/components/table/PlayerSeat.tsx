@@ -2,6 +2,7 @@
 
 import type { PlayerView } from "@/types/game";
 import Card from "./Card";
+import { useI18n } from "@/lib/i18n";
 
 interface PlayerSeatProps {
   player: PlayerView;
@@ -9,6 +10,7 @@ interface PlayerSeatProps {
   isCurrentTurn: boolean;
   isHuman: boolean;
   position: { top: string; left: string };
+  seatIndex: number;
 }
 
 export default function PlayerSeat({
@@ -17,7 +19,9 @@ export default function PlayerSeat({
   isCurrentTurn,
   isHuman,
   position,
+  seatIndex,
 }: PlayerSeatProps) {
+  const { t } = useI18n();
   const isFolded = player.status === "folded";
   const isOut = player.status === "out";
   const isAllIn = player.status === "all_in";
@@ -34,12 +38,17 @@ export default function PlayerSeat({
       <div className="flex gap-0.5">
         {player.hole_cards.length > 0 ? (
           player.hole_cards.map((card, i) => (
-            <Card key={i} cardInt={card} size="sm" />
+            <Card
+              key={i}
+              cardInt={card}
+              size="sm"
+              dealDelay={seatIndex * 200 + i * 100}
+            />
           ))
         ) : !isFolded && !isOut ? (
           <>
-            <Card faceDown size="sm" />
-            <Card faceDown size="sm" />
+            <Card faceDown size="sm" dealDelay={seatIndex * 200} />
+            <Card faceDown size="sm" dealDelay={seatIndex * 200 + 100} />
           </>
         ) : null}
       </div>
@@ -53,10 +62,15 @@ export default function PlayerSeat({
               ? "border-[#fbbf24]"
               : "border-[#222]"
         }`}
+        style={
+          isCurrentTurn
+            ? { animation: "turnPulse 1.5s ease-in-out infinite" }
+            : undefined
+        }
       >
         <div className="flex items-center gap-1">
           <span className="text-[10px] md:text-xs text-[#ccc] font-medium truncate max-w-[50px] md:max-w-[70px]">
-            {isHuman ? "You" : player.name}
+            {isHuman ? t("seat.you") : player.name}
           </span>
           {isDealer && (
             <span className="text-[8px] md:text-[10px] bg-white text-black font-bold w-3.5 h-3.5 md:w-4 md:h-4 flex items-center justify-center">
@@ -74,12 +88,12 @@ export default function PlayerSeat({
         )}
         {isAllIn && (
           <span className="text-[8px] md:text-[10px] text-[#fbbf24] font-bold tracking-wider">
-            ALL IN
+            {t("seat.allIn")}
           </span>
         )}
         {isFolded && (
           <span className="text-[8px] md:text-[10px] text-[#555] tracking-wider">
-            FOLD
+            {t("seat.fold")}
           </span>
         )}
       </div>
