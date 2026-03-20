@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Poker AI — Texas Hold'em",
-  description: "AI-powered Texas Hold'em poker system with GTO+ strategy",
+  title: "박포커 — Texas Hold'em AI",
+  description: "박포커: AI-powered Texas Hold'em poker system with GTO+ strategy",
 };
 
 export default function RootLayout({

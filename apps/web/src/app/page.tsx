@@ -11,7 +11,7 @@ export default function Home() {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 border-b border-[#1a1a1a]">
         <span className="text-sm font-semibold tracking-widest uppercase text-white">
-          Poker AI
+          {t("home.title")}
         </span>
         <div className="flex items-center gap-6 text-xs text-[#666] uppercase tracking-wider">
           <Link href="/guide" className="hover:text-white transition-colors">
@@ -21,10 +21,10 @@ export default function Home() {
             {t("nav.play")}
           </Link>
           <Link href="/rooms" className="hover:text-white transition-colors">
-            Rooms
+            {t("nav.rooms")}
           </Link>
           <Link href="/auth" className="hover:text-white transition-colors">
-            Login
+            {t("nav.login")}
           </Link>
           <LanguageToggle />
         </div>
@@ -43,7 +43,7 @@ export default function Home() {
         </p>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
           <Link
             href="/guide"
             className="group flex flex-col p-6 md:p-8 bg-[#111] border border-[#222] hover:border-[#444] transition-all"
@@ -74,15 +74,30 @@ export default function Home() {
             </p>
           </Link>
 
-          <div className="group flex flex-col p-6 md:p-8 bg-[#111] border border-[#1a1a1a] opacity-40 cursor-not-allowed">
+          <Link
+            href="/rooms"
+            className="group flex flex-col p-6 md:p-8 bg-[#111] border border-[#222] hover:border-[#444] transition-all"
+          >
             <span className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-4">
               03
             </span>
-            <h2 className="text-lg font-semibold text-white mb-2">
+            <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-[#00dc82] transition-colors">
               {t("home.card3.title")}
             </h2>
             <p className="text-xs text-[#666] leading-relaxed">
               {t("home.card3.desc")}
+            </p>
+          </Link>
+
+          <div className="group flex flex-col p-6 md:p-8 bg-[#111] border border-[#1a1a1a] opacity-40 cursor-not-allowed">
+            <span className="text-[10px] tracking-[0.2em] uppercase text-[#555] mb-4">
+              04
+            </span>
+            <h2 className="text-lg font-semibold text-white mb-2">
+              {t("home.card4.title")}
+            </h2>
+            <p className="text-xs text-[#666] leading-relaxed">
+              {t("home.card4.desc")}
             </p>
           </div>
         </div>

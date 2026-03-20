@@ -102,6 +102,18 @@ Standard poker hand rankings apply (highest to lowest):
 
 ---
 
+## Action Time Limit (Time Bank)
+
+Each player has **30 seconds** to make a decision on each action. This is a per-action timer that resets after every action is taken.
+
+- If a player fails to act within 30 seconds, their hand is automatically **folded**.
+- The timer starts as soon as it becomes the player's turn to act.
+- The timer applies equally to all betting rounds (preflop, flop, turn, river).
+- In online play, network latency should be accounted for in timer implementation.
+- This follows standard online poker time bank conventions used across major poker platforms.
+
+---
+
 ## Heads-Up Special Rules
 
 In heads-up play (two players), the standard button/blind assignment is modified:

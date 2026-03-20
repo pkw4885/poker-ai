@@ -15,10 +15,12 @@ const translations = {
   // Nav
   "nav.guide": { ko: "가이드", en: "Guide" },
   "nav.play": { ko: "플레이", en: "Play" },
+  "nav.rooms": { ko: "온라인 포커", en: "Online Poker" },
+  "nav.login": { ko: "로그인", en: "Login" },
 
   // Home page
   "home.subtitle": { ko: "텍사스 홀덤 AI 시스템", en: "Texas Hold'em AI System" },
-  "home.title": { ko: "POKER AI", en: "POKER AI" },
+  "home.title": { ko: "박포커", en: "ParkPoker" },
   "home.tagline": { ko: "WSOP 룰 · GTO+ 전략 · 자가 학습", en: "WSOP Rules · GTO+ Strategy · Self-Improving" },
   "home.card1.title": { ko: "가이드", en: "Guide" },
   "home.card1.desc": {
@@ -30,8 +32,13 @@ const translations = {
     ko: "1~7명의 AI 상대와 난이도를 조절하여 대결",
     en: "Challenge 1-7 AI opponents with adjustable difficulty levels.",
   },
-  "home.card3.title": { ko: "ParkPoker", en: "ParkPoker" },
-  "home.card3.desc": { ko: "엘리트 AI 1v1 — 출시 예정", en: "Elite AI 1v1 — Coming Soon" },
+  "home.card3.title": { ko: "온라인 포커", en: "Online Poker" },
+  "home.card3.desc": {
+    ko: "방을 만들어 온라인으로 다른 플레이어와 대결",
+    en: "Create rooms and play against other players online.",
+  },
+  "home.card4.title": { ko: "박포커 AI", en: "ParkPoker AI" },
+  "home.card4.desc": { ko: "엘리트 AI 1v1 — 출시 예정", en: "Elite AI 1v1 — Coming Soon" },
   "home.footer": { ko: "CFR + Deep RL 기반", en: "Built with CFR + Deep RL" },
 
   // Guide page

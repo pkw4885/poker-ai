@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { listRooms, createRoom, joinRoom, type Room } from "@/lib/rooms";
 
 type Difficulty = "easy" | "medium" | "hard";
@@ -11,6 +12,7 @@ type Difficulty = "easy" | "medium" | "hard";
 export default function RoomsPage() {
   const router = useRouter();
   const { user, token, loading: authLoading, logout } = useAuth();
+  const { t } = useI18n();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -90,10 +92,10 @@ export default function RoomsPage() {
           href="/"
           className="text-xs text-[#666] hover:text-white transition-colors uppercase tracking-wider"
         >
-          &larr; Home
+          &larr; {t("common.back")}
         </Link>
         <span className="text-xs font-semibold tracking-widest uppercase text-[#444]">
-          Rooms
+          {t("nav.rooms")}
         </span>
         <div className="flex items-center gap-3">
           <span className="text-[10px] text-[#666]">{user?.username}</span>
