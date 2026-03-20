@@ -27,7 +27,7 @@ export function formatChips(amount: number, mode: "won" | "bb" = "won", bb: numb
   return amount.toLocaleString();
 }
 
-function ActionBadge({ action, displayMode, bb }: { action: LastAction; displayMode: "won" | "bb"; bb: number }) {
+function ActionBadge({ action, displayMode, bb, isMobile = false }: { action: LastAction; displayMode: "won" | "bb"; bb: number; isMobile?: boolean }) {
   const style = ACTION_STYLES[action.type] || ACTION_STYLES.check;
   const showAmount = action.amount && action.amount > 0 && action.type !== "fold" && action.type !== "check";
   const label = showAmount
@@ -36,13 +36,13 @@ function ActionBadge({ action, displayMode, bb }: { action: LastAction; displayM
 
   return (
     <div
-      className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap z-10 pointer-events-none"
+      className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap z-10 pointer-events-none ${isMobile ? "-top-3.5" : "-top-5"}`}
       style={{
         animation: "actionPop 0.3s ease-out, actionFade 2.5s ease-in forwards",
       }}
     >
       <span
-        className="px-1.5 py-0.5 text-[8px] md:text-[9px] font-bold tracking-wider uppercase"
+        className={`py-0.5 font-bold tracking-wider uppercase ${isMobile ? "px-1 text-[7px]" : "px-1.5 text-[8px] md:text-[9px]"}`}
         style={{
           color: style.color,
           backgroundColor: style.bg,
@@ -66,6 +66,7 @@ interface PlayerSeatProps {
   seatIndex: number;
   displayMode?: "won" | "bb";
   bigBlind?: number;
+  isMobile?: boolean;
 }
 
 export default function PlayerSeat({
@@ -79,6 +80,7 @@ export default function PlayerSeat({
   seatIndex,
   displayMode = "won",
   bigBlind = 20,
+  isMobile = false,
 }: PlayerSeatProps) {
   const { t } = useI18n();
   const isFolded = player.status === "folded";
@@ -101,6 +103,7 @@ export default function PlayerSeat({
             action={player.last_action}
             displayMode={displayMode}
             bb={bigBlind}
+            isMobile={isMobile}
           />
         </div>
       )}
@@ -112,28 +115,32 @@ export default function PlayerSeat({
             <Card
               key={i}
               cardInt={card}
-              size="sm"
+              size={isMobile ? "xs" : "sm"}
               dealDelay={seatIndex * 200 + i * 100}
             />
           ))
         ) : !isFolded && !isOut ? (
-          <>
-            <Card faceDown size="sm" dealDelay={seatIndex * 200} />
-            <Card faceDown size="sm" dealDelay={seatIndex * 200 + 100} />
-          </>
+          isMobile ? null : (
+            <>
+              <Card faceDown size="sm" dealDelay={seatIndex * 200} />
+              <Card faceDown size="sm" dealDelay={seatIndex * 200 + 100} />
+            </>
+          )
         ) : null}
       </div>
 
       {/* Bet amount - shown between cards and player box, closer to table center */}
       {player.current_bet > 0 && (
-        <span className="text-[9px] md:text-[10px] text-[#fbbf24] font-mono font-bold">
+        <span className={`font-mono font-bold text-[#fbbf24] ${isMobile ? "text-[8px]" : "text-[9px] md:text-[10px]"}`}>
           {formatChips(player.current_bet, displayMode, bigBlind)}
         </span>
       )}
 
       {/* Player info box */}
       <div
-        className={`flex flex-col items-center px-2 py-1 md:px-3 md:py-1.5 border bg-[#111] min-w-[60px] md:min-w-[80px] ${
+        className={`flex flex-col items-center border bg-[#111] ${
+          isMobile ? "px-1 py-0.5 min-w-[48px]" : "px-2 py-1 md:px-3 md:py-1.5 min-w-[60px] md:min-w-[80px]"
+        } ${
           isCurrentTurn
             ? "border-white"
             : isAllIn
@@ -148,7 +155,7 @@ export default function PlayerSeat({
       >
         {/* Name + position badges */}
         <div className="flex items-center gap-0.5">
-          <span className="text-[9px] md:text-xs text-[#ccc] font-medium truncate max-w-[45px] md:max-w-[65px]">
+          <span className={`font-medium truncate text-[#ccc] ${isMobile ? "text-[7px] max-w-[38px]" : "text-[9px] md:text-xs max-w-[45px] md:max-w-[65px]"}`}>
             {isHuman ? t("seat.you") : player.name}
           </span>
           {isDealer && (
@@ -169,7 +176,7 @@ export default function PlayerSeat({
         </div>
 
         {/* Stack */}
-        <span className="text-[9px] md:text-xs text-[#00dc82] font-mono">
+        <span className={`text-[#00dc82] font-mono ${isMobile ? "text-[8px]" : "text-[9px] md:text-xs"}`}>
           {formatChips(player.stack, displayMode, bigBlind)}
         </span>
 

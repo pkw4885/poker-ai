@@ -24,13 +24,13 @@ export default function CommunityCards({ board }: CommunityCardsProps) {
   const newCardsStart = prevCountRef.current;
 
   return (
-    <div className="flex gap-1 md:gap-2 justify-center">
+    <div className="flex gap-0.5 md:gap-2 justify-center">
       {cards.map((card, i) => {
         const isNew = card !== -1 && i >= newCardsStart;
         return (
           <div key={i} className={card === -1 ? "opacity-15" : ""}>
             {card === -1 ? (
-              <div className="w-10 h-14 md:w-14 md:h-20 border border-dashed border-[#333]" />
+              <div className="w-8 h-11 md:w-14 md:h-20 border border-dashed border-[#333]" />
             ) : (
               <Card
                 cardInt={card}

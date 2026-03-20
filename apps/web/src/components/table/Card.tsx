@@ -5,11 +5,12 @@ import { decodeCard, getSuitSymbol, isRedSuit } from "@/lib/cards";
 interface CardProps {
   cardInt?: number;
   faceDown?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   dealDelay?: number;
 }
 
 const SIZE_CLASSES = {
+  xs: "w-6 h-9 text-[8px]",
   sm: "w-8 h-11 md:w-10 md:h-14 text-[10px] md:text-xs",
   md: "w-10 h-14 md:w-14 md:h-20 text-xs md:text-sm",
   lg: "w-14 h-20 md:w-18 md:h-26 text-sm md:text-lg",

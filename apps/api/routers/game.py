@@ -6,8 +6,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from services.game_manager import create_game, get_game
+from services.hand_history import HandHistoryStore
 
 router = APIRouter()
+
+_history_store = HandHistoryStore()
 
 
 class CreateGameRequest(BaseModel):
@@ -65,6 +68,12 @@ async def api_new_hand(game_id: str):
         return result
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+
+@router.get("/stats")
+async def api_hand_history_stats():
+    """Return aggregate hand history statistics for AI learning."""
+    return _history_store.get_stats()
 
 
 @router.get("/{game_id}/state")

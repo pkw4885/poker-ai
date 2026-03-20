@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 import os
 import uuid
@@ -9,7 +10,9 @@ import time
 from typing import Any
 
 # Add project root to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+_project_root = os.path.join(os.path.dirname(__file__), "..", "..", "..")
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
 
 from poker_engine import (
     Game,
@@ -18,6 +21,19 @@ from poker_engine import (
     GamePhase,
 )
 from poker_engine.actions import ValidActions
+
+from services.hand_history import HandHistoryStore
+
+# Import the GTO-baseline AI (falls back to legacy AIPlayer on import failure)
+try:
+    from ai.engine.baseline import BaselineAI as _BaselineAI
+    _HAS_BASELINE_AI = True
+except ImportError:
+    _HAS_BASELINE_AI = False
+
+logger = logging.getLogger(__name__)
+
+_history_store = HandHistoryStore()
 
 
 class AIPlayer:
@@ -97,6 +113,7 @@ class ActiveGame:
         is_tournament: bool = True,
     ):
         self.game_id = game_id
+        self.difficulty = difficulty
         self.created_at = time.time()
 
         names = ["You"] + [f"AI_{i}" for i in range(1, num_opponents + 1)]
@@ -107,13 +124,20 @@ class ActiveGame:
         else:
             blind_mgr = BlindManager(schedule=[BlindLevel(small_blind, big_blind)])
         self.game = Game(names, starting_stacks=starting_stack, blind_manager=blind_mgr)
-        self.ai_players = {
-            i: AIPlayer(difficulty) for i in range(1, num_opponents + 1)
-        }
+        # Use GTO-baseline AI when available, fall back to legacy AIPlayer
+        if _HAS_BASELINE_AI:
+            self.ai_players = {
+                i: _BaselineAI(difficulty=difficulty) for i in range(1, num_opponents + 1)
+            }
+        else:
+            self.ai_players = {
+                i: AIPlayer(difficulty) for i in range(1, num_opponents + 1)
+            }
         self.hand_started = False
 
     def start_new_hand(self) -> dict:
         """Start a new hand and run AI actions until it's the human's turn."""
+        self._starting_stacks = {p.id: p.stack for p in self.game.players}
         self.game.start_hand()
         self.hand_started = True
         return self._run_ai_turns()
@@ -212,6 +236,31 @@ class ActiveGame:
                     for pv in response["game_state"]["players"]:
                         if pv["id"] == p.id:
                             pv["hole_cards"] = p.hole_cards
+
+            # Save completed hand to history for AI learning
+            try:
+                starting_stacks = getattr(self, "_starting_stacks", {})
+                players_starting_state = [
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "starting_stack": starting_stacks.get(p.id, p.stack),
+                        "hole_cards": list(p.hole_cards),
+                        "position": p.id,
+                    }
+                    for p in self.game.players
+                ]
+                _history_store.save_hand(
+                    game_id=self.game_id,
+                    hand_number=self.game.hand_number,
+                    difficulty=self.difficulty,
+                    game_state=state,
+                    action_history=self.game.action_history,
+                    hand_results=self.game.hand_results,
+                    players_starting_state=players_starting_state,
+                )
+            except Exception:
+                logger.exception("Failed to save hand history")
 
         return response
 

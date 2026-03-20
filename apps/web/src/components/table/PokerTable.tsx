@@ -1,11 +1,23 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { GameStateView, ValidAction } from "@/types/game";
 import PlayerSeat, { formatChips } from "./PlayerSeat";
 import CommunityCards from "./CommunityCards";
 import ActionPanel from "./ActionPanel";
 import TurnTimer from "./TurnTimer";
 import { useI18n } from "@/lib/i18n";
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 interface PokerTableProps {
   gameState: GameStateView;
@@ -70,6 +82,58 @@ const SEAT_POSITIONS: Record<number, { top: string; left: string }[]> = {
   ],
 };
 
+const MOBILE_SEAT_POSITIONS: Record<number, { top: string; left: string }[]> = {
+  2: [
+    { top: "88%", left: "50%" },
+    { top: "10%", left: "50%" },
+  ],
+  3: [
+    { top: "88%", left: "50%" },
+    { top: "18%", left: "22%" },
+    { top: "18%", left: "78%" },
+  ],
+  4: [
+    { top: "88%", left: "50%" },
+    { top: "50%", left: "5%" },
+    { top: "10%", left: "50%" },
+    { top: "50%", left: "95%" },
+  ],
+  5: [
+    { top: "88%", left: "50%" },
+    { top: "62%", left: "5%" },
+    { top: "18%", left: "22%" },
+    { top: "18%", left: "78%" },
+    { top: "62%", left: "95%" },
+  ],
+  6: [
+    { top: "88%", left: "50%" },
+    { top: "65%", left: "5%" },
+    { top: "25%", left: "8%" },
+    { top: "10%", left: "50%" },
+    { top: "25%", left: "92%" },
+    { top: "65%", left: "95%" },
+  ],
+  7: [
+    { top: "90%", left: "50%" },
+    { top: "72%", left: "5%" },
+    { top: "42%", left: "3%" },
+    { top: "15%", left: "25%" },
+    { top: "15%", left: "75%" },
+    { top: "42%", left: "97%" },
+    { top: "72%", left: "95%" },
+  ],
+  8: [
+    { top: "90%", left: "50%" },
+    { top: "72%", left: "5%" },
+    { top: "42%", left: "3%" },
+    { top: "15%", left: "22%" },
+    { top: "8%", left: "50%" },
+    { top: "15%", left: "78%" },
+    { top: "42%", left: "97%" },
+    { top: "72%", left: "95%" },
+  ],
+};
+
 export default function PokerTable({
   gameState,
   validActions,
@@ -80,8 +144,10 @@ export default function PokerTable({
   displayMode = "won",
   onToggleDisplay,
 }: PokerTableProps) {
+  const isMobile = useIsMobile();
   const numPlayers = gameState.players.length;
-  const positions = SEAT_POSITIONS[numPlayers] || SEAT_POSITIONS[8];
+  const positionMap = isMobile ? MOBILE_SEAT_POSITIONS : SEAT_POSITIONS;
+  const positions = positionMap[numPlayers] || positionMap[8];
   const { t } = useI18n();
 
   const handleTimeout = () => {
@@ -118,7 +184,7 @@ export default function PokerTable({
       </div>
 
       {/* Table */}
-      <div className="relative w-full aspect-[16/10] max-h-[380px] md:max-h-[480px]">
+      <div className="relative w-full aspect-[3/4] md:aspect-[16/10] max-h-[55vh] md:max-h-[480px]">
         {/* Table surface */}
         <div className="absolute inset-[5%] rounded-[50%] bg-gradient-to-b from-[#0d1f0d] to-[#0a1a0a] border-2 border-[#1a2e1a] shadow-[0_0_60px_rgba(0,0,0,0.5)]" />
         <div className="absolute inset-[10%] rounded-[50%] border border-[#1a2e1a]/50" />
@@ -151,6 +217,7 @@ export default function PokerTable({
             seatIndex={i}
             displayMode={displayMode}
             bigBlind={bb}
+            isMobile={isMobile}
           />
         ))}
       </div>
@@ -170,6 +237,7 @@ export default function PokerTable({
         onAction={onAction}
         displayMode={displayMode}
         bigBlind={bb}
+        totalPot={totalPot}
       />
     </div>
   );
