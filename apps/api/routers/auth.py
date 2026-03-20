@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
+import hashlib
+import os
 import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException
-from passlib.hash import bcrypt
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 from core.auth import SECRET_KEY, ALGORITHM, get_current_user
 from database import get_db
@@ -17,6 +18,21 @@ from database import get_db
 router = APIRouter()
 
 TOKEN_EXPIRE_DAYS = 7
+
+
+def _hash_password(password: str) -> str:
+    """Hash a password using SHA-256 with a random salt."""
+    salt = os.urandom(16).hex()
+    h = hashlib.sha256(f"{salt}:{password}".encode()).hexdigest()
+    return f"{salt}${h}"
+
+
+def _verify_password(password: str, stored: str) -> bool:
+    """Verify a password against its stored hash."""
+    if "$" not in stored:
+        return False
+    salt, h = stored.split("$", 1)
+    return hashlib.sha256(f"{salt}:{password}".encode()).hexdigest() == h
 
 
 def _create_token(user_id: int, username: str, email: str) -> str:
@@ -46,21 +62,18 @@ class LoginRequest(BaseModel):
 @router.post("/register")
 async def register(req: RegisterRequest) -> dict[str, Any]:
     """Create a new user account and return a JWT."""
-    # Validate username
     if not _USERNAME_RE.match(req.username):
         raise HTTPException(
             400,
             "Username must be 2-20 characters, alphanumeric and underscore only",
         )
-    # Validate password
     if len(req.password) < 6:
         raise HTTPException(400, "Password must be at least 6 characters")
 
-    password_hash = bcrypt.hash(req.password)
+    password_hash = _hash_password(req.password)
 
     conn = get_db()
     try:
-        # Check for existing user
         existing = conn.execute(
             "SELECT id FROM users WHERE email = ? OR username = ?",
             (req.email, req.username),
@@ -93,7 +106,7 @@ async def login(req: LoginRequest) -> dict[str, Any]:
     finally:
         conn.close()
 
-    if not row or not bcrypt.verify(req.password, row["password_hash"]):
+    if not row or not _verify_password(req.password, row["password_hash"]):
         raise HTTPException(401, "Invalid email or password")
 
     token = _create_token(row["id"], row["username"], row["email"])
@@ -106,4 +119,4 @@ async def login(req: LoginRequest) -> dict[str, Any]:
 @router.get("/me")
 async def me(user: dict[str, Any] = Depends(get_current_user)) -> dict[str, Any]:
     """Return the current authenticated user."""
-    return {"user": user}
+    return user
