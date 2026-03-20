@@ -123,15 +123,29 @@ class ActiveGame:
         if not self.hand_started:
             return {"error": "No hand in progress"}
 
+        prev_phase = self.game.phase
         at = ActionType(action_type)
         action = Action(type=at, amount=amount, player_id=0)
         self.game.act(action)
+        new_phase = self.game.phase
 
-        return self._run_ai_turns()
+        # Detect if human's action caused a street transition
+        deal_event = None
+        if new_phase != prev_phase and new_phase != GamePhase.HAND_OVER:
+            deal_event = {
+                "type": "deal",
+                "phase": new_phase.value,
+                "board": list(self.game.board),
+            }
 
-    def _run_ai_turns(self) -> dict:
+        return self._run_ai_turns(initial_deal=deal_event)
+
+    def _run_ai_turns(self, initial_deal: dict | None = None) -> dict:
         """Run AI player turns until it's human's turn or hand is over."""
         ai_actions = []
+        if initial_deal:
+            ai_actions.append(initial_deal)
+
         while True:
             if self.game.phase == GamePhase.HAND_OVER:
                 self.hand_started = False
@@ -150,12 +164,21 @@ class ActiveGame:
                     amount=ai_action.amount,
                     player_id=current_idx,
                 )
+                prev_phase = self.game.phase
                 self.game.act(ai_action)
                 ai_actions.append({
                     "player_id": current_idx,
                     "type": ai_action.type.value,
                     "amount": ai_action.amount,
                 })
+                # Detect street transition after the action
+                new_phase = self.game.phase
+                if new_phase != prev_phase and new_phase != GamePhase.HAND_OVER:
+                    ai_actions.append({
+                        "type": "deal",
+                        "phase": new_phase.value,
+                        "board": list(self.game.board),
+                    })
             else:
                 break
 

@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import PokerTable from "@/components/table/PokerTable";
 import { createGame, sendAction, startNewHand } from "@/lib/api";
-import type { GameStateView, ValidAction, HandResult, AIAction } from "@/types/game";
+import type { GameStateView, ValidAction, HandResult, AIAction, ActionType } from "@/types/game";
 import { useI18n, LanguageToggle } from "@/lib/i18n";
 import { formatChips } from "@/components/table/PlayerSeat";
 
@@ -82,6 +82,28 @@ export default function PlayPage() {
         }
 
         const action = aiActions[i];
+
+        if (action.type === "deal") {
+          // Street transition: update board and clear last_action badges
+          setGameState((prev) => {
+            if (!prev) return prev;
+            const newPlayers = prev.players.map((p) => ({
+              ...p,
+              last_action: null,
+              current_bet: 0,
+            }));
+            return {
+              ...prev,
+              board: action.board || prev.board,
+              phase: action.phase || prev.phase,
+              players: newPlayers,
+            };
+          });
+          i++;
+          setTimeout(playNext, AI_ACTION_DELAY + 400); // Extra delay for deal
+          return;
+        }
+
         // Show this AI's action: update current_player_idx and last_action
         setGameState((prev) => {
           if (!prev) return prev;
@@ -89,7 +111,7 @@ export default function PlayPage() {
             if (p.id === action.player_id) {
               return {
                 ...p,
-                last_action: { type: action.type, amount: action.amount },
+                last_action: { type: action.type as ActionType, amount: action.amount },
                 status: action.type === "fold" ? "folded" as const : action.type === "all_in" ? "all_in" as const : p.status,
               };
             }
@@ -98,7 +120,7 @@ export default function PlayPage() {
           return {
             ...prev,
             players: newPlayers,
-            current_player_idx: action.player_id,
+            current_player_idx: action.player_id!,
           };
         });
 

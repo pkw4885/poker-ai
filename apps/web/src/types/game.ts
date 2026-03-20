@@ -54,9 +54,11 @@ export interface GameStateView {
 }
 
 export interface AIAction {
-  player_id: number;
-  type: ActionType;
-  amount: number;
+  player_id?: number;
+  type: ActionType | "deal";
+  amount?: number;
+  phase?: GamePhase;
+  board?: number[];
 }
 
 export interface ValidAction {
