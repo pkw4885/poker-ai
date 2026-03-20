@@ -1,0 +1,38 @@
+[project]
+name = "poker-api"
+version = "0.1.0"
+description = "Texas Hold'em Poker AI API Server"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.23.0",
+    "python-socketio>=5.10.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "treys>=0.1.8",
+    "numpy>=1.24.0",
+]
+
+[project.optional-dependencies]
+ai = [
+    "torch>=2.0",
+    "scipy>=1.11.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.24.0",
+    "ruff>=0.5.0",
+]
+
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -1,0 +1,29 @@
+services:
+  web:
+    build:
+      context: ../apps/web
+      dockerfile: ../../docker/Dockerfile.web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../apps/web/src:/app/src
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8000
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../apps/api:/app/api
+      - ../packages/poker-engine:/app/packages/poker-engine
+      - ../ai:/app/ai
+    environment:
+      - DEBUG=true
+      - FRONTEND_URL=http://localhost:3000
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload

@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install poker-engine
+        run: pip install -e packages/poker-engine[dev]
+
+      - name: Install API dependencies
+        run: pip install -e apps/api[dev]
+
+      - name: Lint with ruff
+        run: |
+          pip install ruff
+          ruff check packages/poker-engine apps/api ai
+
+      - name: Test poker-engine
+        run: pytest packages/poker-engine/tests -v
+
+      - name: Test API
+        run: cd apps/api && pytest tests -v
+
+  frontend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Lint
+        working-directory: apps/web
+        run: npm run lint
+
+      - name: Build
+        working-directory: apps/web
+        run: npm run build
